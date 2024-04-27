@@ -1,0 +1,368 @@
+{{ define "cars" }}
+    <link rel="stylesheet" href="/static/sacco.css">
+    
+    <!-- Search suggestions container -->
+    <div id="searchSuggestions" class="suggestion-list"></div>
+
+    <!-- Details container -->
+    <div id="detailsContainer"></div>
+
+    <div class="container mt-4">
+        <h1>All Cars Details</h1>
+
+        <div class="mb-3">
+            <label for="saccoFilterSelect" class="form-label"></label>
+            <select class="form-select" id="saccoFilterSelect" name="saccoFilterSelect">
+                <option value="" selected>All SACCOs</option>
+                {{ range .Saccos }}
+                    <option value="{{ .ID }}">{{ .SaccoName }}</option>
+                {{ end }}
+            </select>
+        </div>
+        
+        <!-- Add Car Button -->
+        <div class="mb-3">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCarModal">Add Car</button>
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Number Plate</th>
+                    <th style="width: 10%;">Make</th>
+                    <th style="width: 10%;">Model</th>
+                    <th style="width: 10%;">No. Of Passengers</th>
+                    <th style="width: 15%;">Fare</th>
+                    <th style="width: 20%;">Sacco Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Cars}}
+                <tr>
+                    <td>{{.NumberPlate}}</td>
+                    <td>{{.Make}}</td>
+                    <td>{{.Model}}</td>
+                    <td>{{.NumberOfPassengers}}</td>
+                    <td>{{.Fare}}</td>
+                    <td>{{.SaccoName}}</td>
+                    <td>
+                        <!-- Edit Button with data attributes -->
+                        <button class="btn btn-warning btn-sm editCarBtn" data-bs-toggle="modal" data-bs-target="#editCarModal" data-carid="{{.ID}}">Edit</button>
+                        <!-- Delete Button with data attributes -->
+                        <button class="btn btn-danger btn-sm deleteCarBtn" data-carid="{{.ID}}">Delete</button>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Car Modal -->
+    <div class="modal fade" id="addCarModal" tabindex="-1" aria-labelledby="addCarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCarModalLabel">Add Car</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCarForm" novalidate>
+                        <div class="mb-3">
+                            <label for="numberPlate" class="form-label">Number Plate:</label>
+                            <input type="text" name="numberPlate" id="numberPlate" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="make" class="form-label">Make:</label>
+                            <input type="text" name="make" id="make" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="model" class="form-label">Model:</label>
+                            <input type="text" name="model" id="model" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noOfPassengers" class="form-label">No. of Passengers:</label>
+                            <input type="number" name="noOfPassengers" id="noOfPassengers" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fare" class="form-label">Fare:</label>
+                            <input type="number" name="fare" id="fare" class="form-control" required>
+                        </div>
+
+                        <!-- Dropdown for selecting SACCO -->
+                        <div class="mb-3">
+                            <label for="saccoSelect" class="form-label">Select SACCO:</label>
+                            <select class="form-select" id="saccoSelect" name="saccoSelect" required>
+                                <option value="" selected disabled>Select SACCO</option>
+                                {{ range .Saccos }}
+                                    <option value="{{ .ID }}">{{ .SaccoName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Car</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Edit Car Modal -->
+    <div class="modal fade" id="editCarModal" tabindex="-1" aria-labelledby="editCarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCarModalLabel">Edit Car</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCarForm" action="/edit-car" method="POST">
+                        <input type="hidden" name="editCarID" id="editCarID">
+                        
+                        <div class="mb-3">
+                            <label for="numberPlate" class="form-label">Number Plate:</label>
+                            <input type="text" name="numberPlate" id="editNumberPlate" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="make" class="form-label">Make:</label>
+                            <input type="text" name="make" id="editMake" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="model" class="form-label">Model:</label>
+                            <input type="text" name="model" id="editModel" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noOfPassengers" class="form-label">No. of Passengers:</label>
+                            <input type="number" name="noOfPassengers" id="editNoOfPassengers" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fare" class="form-label">Fare:</label>
+                            <input type="number" name="fare" id="editFare" class="form-control" required>
+                        </div>
+
+                        <!-- Dropdown for selecting SACCO -->
+                        <div class="mb-3">
+                            <label for="editSaccoSelect" class="form-label">Select SACCO:</label>
+                            <select class="form-select" id="editSaccoSelect" name="saccoSelect" required>
+                                <option value="" selected disabled>Select SACCO</option>
+                                {{ range .Saccos }}
+                                    <option value="{{ .ID }}">{{ .SaccoName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+
+    <script src="/static/logout_timer.js"></script>
+    <script src="/static/search.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Initialize Bootstrap dropdowns
+            $('.dropdown-toggle').dropdown();
+        
+            // Function to handle the submission of the add car form
+            $("#addCarForm").submit(function(event) {
+                event.preventDefault();
+
+                // Send POST request to add car endpoint
+                $.ajax({
+                    type: "POST",
+                    url: "/add-car",
+                    data: $("#addCarForm").serialize(), // Serialize form data
+                    success: function(response) {
+                        // Refresh page after adding car
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error adding car:", error);
+                        // alert("Failed to add car. Please try again.");
+                        alert("Car already exists!");
+                    }
+                });
+            });
+
+            // Function to populate edit car modal with car details
+            $(".editCarBtn").click(function() {
+                let carID = $(this).data("carid");
+
+                // Send GET request to get car details for editing
+                $.ajax({
+                    type: "GET",
+                    url: "/get-car-details/" + carID,
+                    success: function(response) {
+                        // Populate form fields with car details
+                        $("#editCarID").val(response.Car.ID);
+                        $("#editNumberPlate").val(response.Car.NumberPlate);
+                        $("#editMake").val(response.Car.Make);
+                        $("#editModel").val(response.Car.Model);
+                        $("#editNoOfPassengers").val(response.Car.NumberOfPassengers);
+                        $("#editFare").val(response.Car.Fare);
+                        $("#editSaccoSelect").val(response.Car.SaccoID);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error getting car details for editing:", error);
+                        alert("Failed to fetch car details for editing. Please try again.");
+                    }
+                });
+            });
+
+            // Function to handle the submission of the edit car form
+            $("#editCarForm").submit(function(event) {
+                event.preventDefault();
+
+                // Send POST request to edit car endpoint
+                $.ajax({
+                    type: "POST",
+                    url: "/edit-car",
+                    data: $("#editCarForm").serialize(), // Serialize form data
+                    success: function(response) {
+                        // Refresh page after editing car
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error editing car:", error);
+                        alert("Failed to edit car. Please try again.");
+                    }
+                });
+            });
+            
+
+            // Function to handle deletion
+            $(".deleteCarBtn").click(function() {
+                var carID = $(this).data("carid");
+
+                // Send delete request
+                $.ajax({
+                    type: "DELETE",
+                    url: "/delete-car?carid=" + carID,
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting car:", error);
+                        alert("Failed to delete car. Please try again.");
+                    }
+                });
+            });
+
+            // Function to handle SACCO filter change
+            $("#saccoFilterSelect").change(function() {
+                var saccoID = $(this).val();
+
+                // Check if the selected value is not empty
+                if (saccoID !== "") {
+                    // Send AJAX request to fetch filtered cars
+                    $.ajax({
+                        type: "GET",
+                        url: "/filter-cars?saccoID=" + saccoID,
+                        success: function(response) {
+                            // Render filtered cars
+                            renderCars(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error fetching filtered cars:", error);
+                            alert("Failed to fetch filtered cars. Please try again.");
+                        }
+                    });
+                } else {
+                    // If the selected value is empty, reload the page to show all cars
+                    location.reload();
+                }
+            });
+
+            // Function to render cars based on data
+            function renderCars(cars) {
+                // Clear the table body
+                $("tbody").empty();
+
+                // Check if the cars array is null or empty
+                if (cars && cars.length > 0) {
+                    // Render each car row
+                    cars.forEach(function(car) {
+                        var row = $("<tr>");
+                        row.append($("<td>").text(car.NumberPlate));
+                        row.append($("<td>").text(car.Make));
+                        row.append($("<td>").text(car.Model));
+                        row.append($("<td>").text(car.NumberOfPassengers));
+                        row.append($("<td>").text(car.Fare));
+                        row.append($("<td>").text(car.SaccoName));
+                        row.append($('<td>')
+                            .append($('<button class="btn btn-warning btn-sm editCarBtn" data-bs-toggle="modal" data-bs-target="#editCarModal" data-carid="' + car.ID + '">Edit</button>'))
+                            .append($('<button class="btn btn-danger btn-sm deleteCarBtn" data-carid="' + car.ID + '">Delete</button>'))
+                        );
+                        $("tbody").append(row);
+                    });
+                } else {
+                    // Render a message indicating no cars found
+                    var row = $("<tr>").append($("<td colspan='7'>").text("No cars found for this sacco"));
+                    $("tbody").append(row);
+                }
+            }
+
+            $(document).ready(function () {
+                // Event listener for SACCO name click
+                $("tbody").on("click", ".sacco-link", function () {
+                    var saccoID = $(this).data("saccoid");
+
+                    // Send AJAX request to fetch cars and drivers for the clicked SACCO
+                    $.ajax({
+                        type: "GET",
+                        url: "/get-sacco-details?saccoID=" + saccoID,
+                        success: function(response) {
+                            // Render cars and drivers for the clicked SACCO
+                            renderSaccoDetails(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error fetching SACCO details:", error);
+                            alert("Failed to fetch SACCO details. Please try again.");
+                        }
+                    });
+                });
+            });
+
+            // Function to render cars and drivers for the clicked SACCO
+            function renderSaccoDetails(data) {
+                // Update cars table
+                $("#carsTable tbody").empty();
+                if (data.cars.length > 0) {
+                    data.cars.forEach(function(car) {
+                        var row = $("<tr>");
+                        row.append($("<td>").text(car.NumberPlate));
+                        // Add more columns as needed
+                        $("#carsTable tbody").append(row);
+                    });
+                } else {
+                    $("#carsTable tbody").append("<tr><td colspan='3'>No cars found</td></tr>");
+                }
+
+                // Update drivers table
+                $("#driversTable tbody").empty();
+                if (data.drivers.length > 0) {
+                    data.drivers.forEach(function(driver) {
+                        var row = $("<tr>");
+                        row.append($("<td>").text(driver.Name));
+                        // Add more columns as needed
+                        $("#driversTable tbody").append(row);
+                    });
+                } else {
+                    $("#driversTable tbody").append("<tr><td colspan='5'>No drivers found</td></tr>");
+                }
+            }
+        });
+
+    </script>
+
+{{ end }}

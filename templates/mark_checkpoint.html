@@ -1,0 +1,145 @@
+{{ define "markCheckpoints" }}
+    <link rel="stylesheet" href="/static/sacco.css">
+
+    <!-- Search suggestions container -->
+   <div id="searchSuggestions" class="suggestion-list"></div>
+
+    <!-- Details container -->
+    <div id="detailsContainer"></div>
+
+    <div class="container mt-4">
+        <h1>Mark Checkpoint</h1>
+
+        <!-- Collapsible "Add Mark Checkpoint" button -->
+        <button class="btn btn-primary mb-3" type="button" data-toggle="collapse" data-target="#addMarkCheckpointForm" aria-expanded="false" aria-controls="addMarkCheckpointForm">
+            Add Mark Checkpoint
+        </button>
+
+        <!-- Collapsible "Add Mark Checkpoint" form -->
+        <div class="collapse" id="addMarkCheckpointForm">
+            <form method="post" action="/add-mark-checkpoint" novalidate>
+                <div class="mb-3">
+                    <label for="checkpointSelect" class="form-label">Select Checkpoint:</label>
+                    <select class="form-select" id="checkpointSelect" name="checkpointSelect" required>
+                        <option value="" selected disabled>Select Checkpoint</option>
+                        {{ range .Checkpoints }}
+                        <option value="{{ .ID }}">{{ .CheckpointName }}</option>
+                        {{ end }}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="carSelect" class="form-label">Select Car:</label>
+                    <select class="form-select" id="carSelect" name="carSelect" required>
+                        <option value="" selected disabled>Select Car</option>
+                        {{ range .Cars }}
+                        <option value="{{ .ID }}">{{ .NumberPlate }}</option>
+                        {{ end }}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="timePicker" class="form-label">Select Time:</label>
+                    <input type="time" id="timePicker" name="timePicker" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="datePicker" class="form-label">Select Date:</label>
+                    <input type="date" id="datePicker" name="datePicker" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Mark Checkpoint</button>
+            </form>
+        </div>
+
+        <!-- Marked Checkpoints Table -->
+        <div class="mt-4">
+            <h2>Marked Checkpoints</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Checkpoint Name</th>
+                        <th>Number Plate</th>
+                        <th>Time</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="markedCheckpointsTable">
+                    <!-- Populated dynamically with marked checkpoints -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Include jQuery and AJAX from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+
+    <script src="/static/logout_timer.js"></script>
+    <script src="/static/search.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Event listener for the toggle button
+            $("#toggleFormBtn").click(function() {
+                $("#addCheckpointForm").toggle(); // Toggle the visibility of the form
+            });
+        });
+
+        // Function to fetch and populate marked checkpoints table
+        function populateMarkedCheckpoints() {
+            $.get("/marked-checkpoints", function(data) {
+                $("#markedCheckpointsTable").empty();
+                data.forEach(function(checkpoint) {
+                    $("#markedCheckpointsTable").append(
+                        `<tr>
+                            <td>${checkpoint.CheckpointName}</td>
+                            <td>${checkpoint.NumberPlate}</td>
+                            <td>${checkpoint.Time}</td>
+                            <td>${checkpoint.Date}</td>
+                        </tr>`
+                    );
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            // Populate marked checkpoints table on page load
+            populateMarkedCheckpoints();
+
+            // Event listener for marking checkpoint
+            $("#markCheckpointBtn").click(function () {
+                var checkpointID = $("#checkpointSelect").val();
+                var carID = $("#carSelect").val();
+                var time = $("#timePicker").val();
+                var date = $("#datePicker").val();
+
+                // Validate inputs
+                if (!checkpointID || !carID || !time || !date) {
+                    alert("Please select checkpoint, car, time and date.");
+                    return;
+                }
+
+                // Send AJAX request to mark checkpoint
+                $.ajax({
+                    type: "POST",
+                    url: "/mark-checkpoint",
+                    data: {
+                        checkpointID: checkpointID,
+                        carID: carID,
+                        time: time,
+                        date: date
+                    },
+                    success: function (response) {
+                        alert("Checkpoint marked successfully.");
+                        // Populate marked checkpoints table after successful addition
+                        populateMarkedCheckpoints();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error marking checkpoint:", error);
+                        alert("Failed to mark checkpoint. Please try again.");
+                    }
+                });
+            });
+        });
+    </script>
+{{ end }}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacco Management</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="/static/images/bus.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/menu.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-orange fixed-top">
+        <a class="navbar-brand" href="#">
+            <img src="/static/images/bus.ico" alt="Bootstrap" width="30" height="28">
+        </a>
+        <a class="navbar-brand" href="/home">Chelsea Sacco Management</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <div>
+                    <a href="/sacco">Saccos</a>
+                </div>
+                <!-- cars Dropdown -->
+                <li class='nav-item dropdown'>
+                    <a class="nav-link-item dropdown-toggle" href="#" id="navbarDropdownCars" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Cars
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownCars">
+                        <a class='dropdown-item' href="/cars">View All Cars</a>
+                    </div>
+                </li>
+
+                <!-- Drivers Dropdown -->
+                <li class='nav-item dropdown'>
+                    <a class="nav-link-item dropdown-toggle" href="#" id="navbarDropdownDrivers" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Drivers
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownDrivers">
+                        <a class='dropdown-item' href="/drivers">View All Drivers</a>
+                    </div>
+                </li>
+
+                <!-- Checkpoints Dropdown -->
+                <li class='nav-item dropdown'>
+                    <a class="nav-link-item dropdown-toggle" href="#" id="navbarDropdownCheckpoints" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Checkpoints
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownCheckpoints">
+                        <a class='dropdown-item' href="/checkpoints">View All Checkpoints</a>
+                    </div>
+                </li>
+
+                <!-- Routes Dropdown -->
+                <li class='nav-item dropdown'>
+                    <a class="nav-link-item dropdown-toggle" href="#" id="navbarDropdownRoutes" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Routes
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownRoutes">
+                        <a class='dropdown-item' href="/routes">View All Routes</a>
+                    </div>
+                </li>
+
+                <!-- Mark Checkpoints Dropdown -->
+                <li class='nav-item dropdown'>
+                    <a class="nav-link-item dropdown-toggle" href="#" id="navbarDropdownMarkCheckpoints" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Mark Checkpoints
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMarkCheckpoints">
+                        <a class='dropdown-item' href="/mark-checkpoint">View Marked Checkpoints</a>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Add Search Form -->
+            <form class="form-inline my-2 my-lg-0" id="searchForm">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"
+                    id="searchInput">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+
+            <form class="form-inline my-2 my-lg-0">
+                <a class="btn btn-outline-danger my-2 my-sm-0" href="/logout">Logout</a>
+            </form>
+        </div>
+    </nav>
+
+    <!-- JavaScript code -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        //JavaScript code here
+    </script>
+</body>
+
+</html>

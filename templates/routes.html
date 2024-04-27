@@ -1,0 +1,271 @@
+{{define "routes"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routes</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/sacco.css">
+</head>
+<body>
+    <!-- Search suggestions container -->
+    <div id="searchSuggestions" class="suggestion-list"></div>
+
+    <!-- Details container -->
+    <div id="detailsContainer"></div>
+    <div class="container mt-4">
+        <h1>Routes</h1>
+        <!-- Button to toggle form visibility -->
+        <button type="button" class="btn btn-primary" id="toggleFormBtn">Create Route</button>
+
+        <!-- Form for creating a route (initially hidden) -->
+        <form id="createRouteForm" action="/create-route" method="POST" style="display: none;">
+            <div class="form-group">
+                <label for="sacco">Select SACCO:</label>
+                <select class="form-control" name="sacco" id="sacco">
+                    {{range .Saccos}}
+                    <option value="{{.ID}}">{{.SaccoName}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Select Checkpoints:</label><br>
+                {{range .Checkpoints}}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="checkpoints[]" value="{{.ID}}" id="checkpoint{{.ID}}">
+                    <label class="form-check-label" for="checkpoint{{.ID}}">{{.CheckpointName}}</label>
+                </div>
+                {{end}}
+            </div>
+            <button type="submit" class="btn btn-primary">Create Route</button>
+        </form>
+        <br>
+        <br>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sacco</th>
+                    <th>Routes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="routesTableBody">
+                <!-- Routes will be dynamically added here -->
+                {{range .Routes}}
+                <tr>
+                    <td>{{.SaccoName}}</td>
+                    <td>{{range .Checkpoints}}{{.}}, {{end}}</td>
+                    <td>
+                        <!-- Edit Button with data attributes -->
+                        <!-- <button class="btn btn-warning btn-sm editRouteBtn" data-bs-toggle="modal" data-bs-target="#editRouteModal" data-routeid="{{.ID}}" data-saccoid="{{.SaccoID}}">Edit</button> -->
+                        <!-- Delete Button with data attributes -->
+                        <!-- <button class="btn btn-danger btn-sm deleteRouteBtn" data-routeid="{{.ID}}">Delete</button> -->
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Edit Route Modal -->
+    <div class="modal fade" id="editRouteModal" tabindex="-1" aria-labelledby="editRouteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRouteModalLabel">Edit Route</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRouteForm" action="/edit-route" method="POST">
+                        <!-- Form fields for editing a route go here -->
+                        <input type="hidden" name="editRouteID" id="editRouteID">
+                        <div class="mb-3">
+                            <label for="editSaccoSelect" class="form-label">Select SACCO:</label>
+                            <select class="form-select" id="editSaccoSelect" name="editSaccoSelect" required>
+                                <option value="" selected disabled>Select SACCO</option>
+                                {{ range .Saccos }}
+                                    <option value="{{ .ID }}">{{ .SaccoName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Checkpoints:</label><br>
+                            {{ range .Checkpoints }}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="editCheckpointsSelect[]" value="{{ .ID }}" id="editCheckpoint{{ .ID }}" {{ if .IsSelected }} checked {{ end }}>
+                                    <label class="form-check-label" for="editCheckpoint{{ .ID }}">{{ .CheckpointName }}</label>
+                                </div>
+                            {{ end }}
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Include Bootstrap JS from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Include jQuery and AJAX from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+    
+    <script src="/static/logout_timer.js"></script>
+    <script src="/static/search.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize Bootstrap dropdowns
+            $('.dropdown-toggle').dropdown();
+    
+            // Function to toggle form visibility
+            $('#toggleFormBtn').click(function() {
+                $('#createRouteForm').toggle();
+            });
+
+            // Function to hide home details table
+            function hideRouteDetailsTable() {
+                $(".table").hide();
+                $("h1").hide();
+            }
+
+            // Function to show home details table
+            function showRouteDetailsTable() {
+                $(".table").show();
+                $("h1").show();
+            }
+    
+            // Function to update routes table
+            function updateRoutesTable(data) {
+                $('#routesTableBody').empty();
+                if (data && data.length > 0) { // Check if data is not null and has at least one element
+                    data.forEach(function(route) {
+                        var editButton = '<button class="btn btn-warning btn-sm editRouteBtn" data-bs-toggle="modal" data-bs-target="#editRouteModal" data-routeid="' + route.route_id + '" data-saccoid="' + route.sacco_id + '">Edit</button>';
+                        var deleteButton = '<button class="btn btn-danger btn-sm deleteRouteBtn" data-routeid="' + route.route_id + '">Delete</button>';
+                        var row = '<tr id="routeRow_' + route.route_id + '"><td>' + route.sacco_name + '</td><td>' + route.checkpoints.join(', ') + '</td><td>' + editButton + ' ' + deleteButton + '</td></tr>';
+                        $('#routesTableBody').append(row);
+                    });
+                } else {
+                    $('#routesTableBody').append('<tr><td colspan="3">No routes found</td></tr>');
+                }
+            }
+    
+    
+            // Make an AJAX request to fetch routes data and update the table
+            $.ajax({
+                url: '/get-routes',
+                method: 'GET',
+                success: function(response) {
+                    console.log(response);
+                    updateRoutesTable(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to fetch routes:', error);
+                }
+            });
+
+            // Function to reset checkboxes in the edit modal
+            function resetEditModalCheckboxes() {
+                $('input[name="editCheckpointsSelect[]"]').prop('checked', false);
+            }
+    
+            // Handle click on edit button using event delegation
+            $(document).on('click', '.editRouteBtn', function() {
+                // Reset checkboxes before populating with new data
+                resetEditModalCheckboxes();
+
+                // Get the route ID and SACCO ID from data attributes
+                var routeID = $(this).data('routeid');
+                var saccoID = $(this).data('saccoid');
+    
+                // Make an AJAX request to fetch route data by ID
+                $.ajax({
+                    url: '/get-route-details?id=' + routeID,
+                    method: 'GET',
+                    success: function(response) {
+    
+                        console.log("Response from the server:", response);
+                        // Populate the edit form fields with route data
+                        $('#editRouteID').val(response.ID);
+                        $('#editSaccoSelect').val(response.SaccoID);
+                        // $('#editCheckpointsSelect').val(response.checkpoint_ids);
+
+                        // Iterate through each checkbox in the edit modal
+                        $('input[name="editCheckpointsSelect[]"]').each(function() {
+                            // Check if the checkbox value exists in the list of checkpoints associated with the route
+                            if (response.CheckpointIDs.includes(parseInt($(this).val()))) {
+                                $(this).prop('checked', true); // If yes, set the checkbox to checked
+                            }
+                        });
+                        
+                        // Open the edit route modal
+                        $('#editRouteModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to fetch route details:', error);
+                        alert("Cannot edit route");
+                    }
+                });
+
+                $("#editRouteForm").submit(function(event) {
+                    event.preventDefault();
+
+                    // Send POST request to edit route
+                    $.ajax({
+                        type: "POST",
+                        url: "/edit-route",
+                        data: $("#editRouteForm").serialize(),
+                        success: function(response) {
+                            console.log(response);
+                            
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error editing route:", error);
+                        }
+                    });
+                });
+            });
+    
+            // Handle click on delete button using event delegation
+            $(document).on('click', '.deleteRouteBtn', function() {
+                // Get the route ID from data attribute
+                var routeID = $(this).data('routeid');
+                console.log("Route ID:", routeID);
+                deleteRoute(routeID);
+            });
+    
+            function deleteRoute(routeID) {
+                $.ajax({
+                    url: '/delete-route?routeid=' + routeID,
+                    type: 'DELETE',
+                    success: function(response) {
+                        console.log(response);
+                        // Removes the deleted route from the table
+                        $('#routeRow_' + routeID).remove();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+            // Event listener for search input to hide home details
+            $('#searchInput').on('input', function () {
+                var query = $(this).val().trim();
+                if (query.length > 0) {
+                    // Hide details table when search is performed
+                    hideRouteDetailsTable();
+                } else {
+                    // Show details table when search input is empty
+                    showRouteDetailsTable();
+                }
+            });
+        });
+    
+    </script>
+    
+</body>
+</html>
+{{end}}

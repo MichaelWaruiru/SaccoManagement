@@ -1,0 +1,62 @@
+.suggestion-list {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.sacco-link {
+    cursor: pointer;
+    display: block;
+    padding: 10px;
+    transition: transform 0.5s ease;
+}
+
+.sacco-link:hover {
+    color: white;
+    background-color: blue;
+    transform: scale(0.9);
+    border-radius: 30px;
+}
+
+.hidden {
+        display: none;
+}
+
+/* Style for displaying the search populated table results */
+#searchResultsTableContent {
+    margin: 0 auto; /* This centers the table horizontally */
+    width: 90%;
+}
+
+#searchSuggestions,
+#detailsContainer {
+    justify-content: center;
+    text-align: center;
+}
+
+/* Media query for adjusting suggestion list positioning on smaller screens */
+@media (max-width: 768px) {
+    #searchSuggestions {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        right: 0;
+        z-index: 9999; /* Ensure it's above other elements */
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-height: calc(100vh - 50px); /* Limit height to viewport height */
+        overflow-y: auto; /* Enable vertical scrolling if needed */
+    }
+}
+
+/* CSS for edit and delete buttons */
+/* .edit-btn,
+.delete-btn {
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.sacco-link:hover .edit-btn,
+.sacco-link:hover .delete-btn {
+    opacity: 1;
+} */

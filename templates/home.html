@@ -1,0 +1,80 @@
+{{ define "home" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chelsea Sacco Management - Home</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="/static/menu.css"> -->
+    <link rel="stylesheet" href="/static/sacco.css">
+</head>
+
+<body>
+    <!-- Search suggestions container -->
+    <div id="searchSuggestions" class="suggestion-list"></div>
+
+    <!-- Details container -->
+    <div id="detailsContainer"></div>
+
+    <div class="container mt-5">
+        <h1>Sacco Details</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sacco Name</th>
+                    <th>Vehicles</th>
+                    <th>Routes</th>
+                    <th>Manager</th>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be dynamically added here -->
+                {{ range . }}
+                <tr>
+                    <td>{{.Sacco.SaccoName}}</td>
+                    <td>{{.Vehicles}}</td>
+                    <!-- <td>{{range .Route}}{{.}}, {{end}}</td> -->
+                    <td>
+                        {{- range $i, $route := .Route }}
+                            {{- if $i }}, {{ end }}
+                            {{- $route }}
+                        {{- end }}
+                    </td>
+                    <td>{{.Manager}}</td>
+                    <td>{{.Contact}}</td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/static/logout_timer.js"></script>
+    <script src="/static/search.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Fetch SACCO data from the server using AJAX
+            function fetchSaccoData() {
+                $.ajax({
+                    url: "/get-sacco-data",
+                    type: "GET",
+                    success: function (response) {
+                        // console.log(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching Sacco data:", error);
+                    }
+                });
+            }
+
+            // Call the fetchSaccoData function when the document is ready
+            fetchSaccoData();
+        });
+    </script>
+</body>
+
+</html>
+{{ end }}

@@ -1,0 +1,399 @@
+{{ define "drivers" }}
+    <link rel="stylesheet" href="/static/sacco.css">
+    
+    <!-- Search suggestions container -->
+    <div id="searchSuggestions" class="suggestion-list"></div>
+
+    <!-- Details container -->
+    <div id="detailsContainer"></div>
+
+    <div class="container mt-4">
+        <h1>All Drivers Details</h1>
+
+        <div class="mb-3">
+            <label for="saccoFilterSelect" class="form-label"></label>
+            <select class="form-select" id="saccoFilterSelect">
+                <option value="" selected>All SACCOs</option>
+                {{ range .Saccos }}
+                    <option value="{{ .ID }}">{{ .SaccoName }}</option>
+                {{ end }}
+            </select>
+        </div>        
+
+        <!-- Add Driver Button -->
+        <div class="mb-3">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDriverModal">Add Driver</button>
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Name</th>
+                    <th style="width: 15%;">ID Number</th>
+                    <th style="width: 15%;">Contact</th>
+                    <th style="width: 15%;">Assigned Car</th>
+                    <th style="width: 15%;">Assigned Sacco</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Drivers}}
+                <tr>
+                    <td>{{.Name}}</td>
+                    <td>{{.IDNumber}}</td>
+                    <td>{{.Contact}}</td>
+                    <td>{{.NumberPlate}}</td>
+                    <td>{{.SaccoName}}</td>
+                    <td>
+                        <!-- Edit Button with data attributes -->
+                        <button class="btn btn-warning btn-sm editDriverBtn" data-bs-toggle="modal" data-bs-target="#editDriverModal" data-driverid="{{.ID}}">Edit</button>
+                        <!-- Delete Button with data attributes -->
+                        <button class="btn btn-danger btn-sm deleteDriverBtn" data-driverid="{{.ID}}">Delete</button>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Driver Modal -->
+    <div class="modal fade" id="addDriverModal" tabindex="-1" aria-labelledby="addDriverModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDriverModalLabel">Add a New Driver</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDriverForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name:</label>
+                            <input type="text" name="name" id="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="idNumber" class="form-label">ID Number:</label>
+                            <input type="text" name="idNumber" id="idNumber" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact" class="form-label">Contact:</label>
+                            <input type="text" name="contact" id="contact" class="form-control" required>
+                        </div>
+
+                        <!-- Dropdown for selecting cars by number plates -->
+                        <div class="mb-3">
+                            <label for="assignedCar" class="form-label">Select Car:</label>
+                            <select class="form-select" id="assignedCar" name="assignedCar" required>
+                                <option value="" selected disabled>Select Car</option>
+                                {{ range .Cars }}
+                                    <option class="car-option" value="{{ .NumberPlate }}" data-sacco="{{ .SaccoID }}">{{ .NumberPlate }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                        
+
+                        <!-- Dropdown for selecting saccos -->
+                        <div class="mb-3">
+                            <label for="assignedSacco" class="form-label">Select SACCO:</label>
+                            <select class="form-select" id="assignedSacco" name="assignedSacco" required>
+                                <option value="" selected disabled>Select SACCO</option>
+                                {{ range .Saccos }}
+                                    <option value="{{ .ID }}">{{ .SaccoName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>                        
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Driver</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Driver Modal -->
+    <div class="modal fade" id="editDriverModal" tabindex="-1" aria-labelledby="editDriverModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editDriverModalLabel">Edit Driver</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDriverForm" action="/edit-driver" method="POST">
+                        <input type="hidden" name="editDriverID" id="editDriverID">
+                        <div class="mb-3">
+                            <label for="editName" class="form-label">Name:</label>
+                            <input type="text" name="editName" id="editName" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editIDNumber" class="form-label">ID Number:</label>
+                            <input type="text" name="editIDNumber" id="editIDNumber" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editContact" class="form-label">Contact:</label>
+                            <input type="text" name="editContact" id="editContact" class="form-control" required>
+                        </div>
+
+                        <!-- Dropdown for selecting assigned car in the edit form -->
+                        <div class="mb-3">
+                            <label for="editAssignedCar" class="form-label">Assigned Car:</label>
+                            <select name="editAssignedCar" id="editAssignedCar" class="form-control" required>
+                                {{ range .Cars }}
+                                <option value="{{ .NumberPlate }}">{{ .NumberPlate }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                        <!-- Dropdown for selecting assigned sacco in the edit form -->
+                        <div class="mb-3">
+                            <label for="editAssignedSacco" class="form-label">Assigned SACCO:</label>
+                            <select name="editAssignedSacco" id="editAssignedSacco" class="form-control" required>
+                                {{ range .Saccos }}
+                                <option value="{{ .ID }}">{{ .SaccoName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Include Bootstrap JS from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Include jQuery and AJAX from a CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+
+    <script src="/static/logout_timer.js"></script>
+    <script src="/static/search.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Initialize Bootstrap dropdowns
+            $('.dropdown-toggle').dropdown();
+
+            // Function to hide home details table
+            function hideHomeDetailsTable() {
+                $(".table").hide();
+                $("h1").hide();
+            }
+
+            // Function to show home details table
+            function showHomeDetailsTable() {
+                $(".table").show();
+                $("h1").show();
+            }
+
+            // Event listener for search input to hide home details
+            $('#searchInput').on('input', function () {
+                var query = $(this).val().trim();
+                if (query.length > 0) {
+                    // Hide details table when search is performed
+                    hideHomeDetailsTable();
+                } else {
+                    // Show details table when search input is empty
+                    showHomeDetailsTable();
+                }
+            });
+        });
+        
+        // AJAX Form Submission
+        $(document).ready(function () {
+            $("#addDriverForm").submit(function (e) {
+                e.preventDefault();
+
+                // Collect form data
+                var formData = {
+                    name: $("#name").val(),
+                    idNumber: $("#idNumber").val(),
+                    contact: $("#contact").val(),
+                    assignedCar: $("#assignedCar").val(),
+                    assignedSacco: $("#assignedSacco").val()
+                };
+
+                // Debugging: Print formData to console
+                console.log("Form Data:", formData);
+
+                // Perform AJAX submission here
+                $.ajax({
+                    type: "POST",
+                    url: "/add-driver",
+                    data: formData,
+                    success: function (data) {
+                        console.log("Driver added successfully");
+                        location.reload()
+                    },
+                    error: function (error) {
+                        console.error("Error adding driver", error);
+                    },
+                    complete: function () {
+                        // Close the modal after successful submission
+                        $("#addDriverModal").modal("hide")
+                    }
+                });
+            });
+
+            $(document).ready(function () {
+                // Initialize a flag to track if the SACCO field has been manually changed
+                var saccoManuallyChanged = false;
+
+                // Disable the SACCO field initially
+                $("#assignedSacco").prop('disabled', true);
+
+                // Add change event listener to assignedCar dropdown in add driver modal
+                $("#assignedCar").change(function () {
+                    // Get the selected car value
+                    var selectedCar = $(this).val();
+
+                    if (!saccoManuallyChanged) {
+                        if (selectedCar) {
+                            // Find the corresponding SACCO for the selected car in the list of cars
+                            var selectedSacco = $(".car-option[value='" + selectedCar + "']").data("sacco");
+
+                            // Update the assignedSacco field with the selected SACCO
+                            $("#assignedSacco").val(selectedSacco);
+
+                            // Enable the SACCO field after automatically updating its value
+                            $("#assignedSacco").prop('disabled', false);
+                        }
+                    }
+                });
+
+                // Add change event listener to assignedSacco dropdown in add driver modal
+                $("#assignedSacco").change(function () {
+                    // Set the flag to indicate that the SACCO field has been manually changed
+                    saccoManuallyChanged = true;
+                });
+            });
+
+            // Event listener for edit button
+            $(document).on("click", ".editDriverBtn", function () {
+                var driverID = $(this).data("driverid");
+
+                $.ajax({
+                    type: "GET",
+                    url: "/get-driver-details/" + driverID,
+                    success: function (data) {
+                        // Populate the edit form fields with driver details
+                        $("#editDriverID").val(data.ID);
+                        $("#editName").val(data.Name);
+                        $("#editIDNumber").val(data.IDNumber);
+                        $("#editContact").val(data.Contact);
+                        $("#editAssignedCar").val(data.NumberPlate);
+                        $("#editAssignedSacco").val(data.SaccoID);
+                    },
+                    error: function (error) {
+                        console.error("Error fetching driver details", error);
+                    }
+                });
+            });
+
+            // Add event listener to edit form submission
+            $("editDriverForm").submit(function (e) {
+                e.preventDefault();
+
+                // Collect form data
+                var formData = {
+                    editDriverID: $("#editDriverID").val(),
+                    editName: $("#editName").val(),
+                    editIDNumber: $("#editIDNumber").val(),
+                    editContact: $("#editContact").val(),
+                    editAssignedCar: $("#editAssignedCar").val(),
+                    editAssignedSacco:$("#editAssignedSacco").val(),
+                };
+
+                // Perform ajax submission
+                $.ajax({
+                    type: "POST",
+                    url: "/edit-driver",
+                    data: formData,
+                    success: function (data) {
+                        console.log("Driver edited successfully");
+                        location.reload();
+                    },
+                    error: function (error) {
+                        console.error("Error editing driver", error);
+                    },
+                    complete: function () {
+                        // Close the modal after successful submission
+                        $("#editDriverModal").modal("hide");
+                    }
+                });
+            });
+
+            // Function to handle driver deletion
+            $(".deleteDriverBtn").click(function () {
+                var driverID = $(this).data("driverid");
+
+                // AJAX request to delete driver
+                $.ajax({
+                    type: "DELETE",
+                    url: "/delete-driver?driverid=" + driverID,
+                    success: function (response) {
+                        location.reload();
+                        alert("Driver deleted successfully.")
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error deleting driver:", error);
+                        alert("Failed to delete driver. Please try again.")
+                    }
+                })
+            });
+        });
+
+        // Event listener for SACCO filter change
+        $("#saccoFilterSelect").change(function() {
+            var saccoID = $(this).val();
+
+            // Check if the selected value is not empty
+            if (saccoID !== "") {
+                // Send AJAX request to fetch filtered drivers
+                $.ajax({
+                    type: "GET",
+                    url: "/filter-drivers?saccoID=" + saccoID,
+                    success: function(response) {
+                        // Render filtered drivers
+                        renderDrivers(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching filtered drivers:", error);
+                        alert("Failed to fetch filtered drivers. Please try again.");
+                    }
+                });
+            } else {
+                // If the selected value is empty, reload the page to show all drivers
+                location.reload();
+            }
+        });
+
+        // Function to render drivers based on data
+        function renderDrivers(drivers) {
+            // Clear the table body
+            $("tbody").empty();
+
+            // Check if the drivers array is null or empty
+            if (Array.isArray(drivers) && drivers.length > 0) {
+                // Render each driver row
+                drivers.forEach(function(driver) {
+                    var row = $("<tr>");
+                    row.append($("<td>").text(driver.Name));
+                    row.append($("<td>").text(driver.IDNumber));
+                    row.append($("<td>").text(driver.Contact));
+                    row.append($("<td>").text(driver.NumberPlate));
+                    row.append($("<td>").text(driver.SaccoName));
+                    row.append($('<td>')
+                        .append($('<button class="btn btn-warning btn-sm editDriverBtn" data-bs-toggle="modal" data-bs-target="#editDriverModal" data-driverid="' + driver.ID + '">Edit</button>'))
+                        .append($('<button class="btn btn-danger btn-sm deleteDriverBtn" data-driverid="' + driver.ID + '">Delete</button>'))
+                    );
+                    $("tbody").append(row);
+                });
+            } else {
+                // Render a message indicating no drivers found
+                var row = $("<tr>").append($("<td colspan='6'>").text("No drivers found for this sacco"));
+                $("tbody").append(row);
+            }
+        }
+
+    </script>
+{{ end }}

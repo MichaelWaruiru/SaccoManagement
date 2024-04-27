@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" lang="eng">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/static/signup.css">
+    <link rel="icon" href="/static/images/bus.ico" type="image/x-icon">
+</head>
+<body class="signup-body">
+    <div class="container">
+        <h1>Sign Up</h1>
+        <form method="POST" action="/signup">
+            <label for="email">Email:</label>
+            <input type="text" name="email" id="email" required placeholder="Email">
+            <br>
+            <br>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required placeholder="Username">
+            <br>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required placeholder="Password">
+            <br>
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" required placeholder="Confirm Password">
+            <br>
+            <input type="submit" value="Sign Up" style="cursor: pointer; background-color: rgb(8, 240, 39);">
+            <p>Already have an account? <a href="/login">Login</a></p>
+
+            {{ if .FlashMessage }}
+            <p style="color: red;">{{ .FlashMessage }}</p>
+            {{ end }}
+        </form>
+    </div>
+
+    <script src="/static/logout_timer.js"></script>
+</body>
+</html>

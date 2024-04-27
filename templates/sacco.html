@@ -1,0 +1,681 @@
+{{ define "sacco" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacco Management</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="/static/images/bus.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/static/sacco.css">
+</head>
+<body>
+    <!-- Container for displaying search suggestions -->
+    <div id="searchSuggestions" class="suggestion-list"></div>
+
+    <!-- Container for displaying details after clicking on suggestions -->
+    <div id="detailsContainer">
+        <!-- Details will be displayed here -->
+    </div>
+
+    <!-- Container for displaying SACCO content -->
+    <div id="saccoContent">
+        <div class="container text-center">
+            <h1 class="mt-5 mb-4">Saccos</h1>
+            <!-- Button to add Saccos dynamically -->
+            <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addSaccoModal">+ Add Sacco</button>
+        </div>
+
+        <div class="container text-center">
+            <!-- Sacco names will be displayed here -->
+            <div id="saccoList" class="d-inline-block">
+                {{ range .Saccos }}
+                    <p href="#" class="sacco-link" data-saccoid="{{ .ID }}">{{ .SaccoName }}</p>
+                    <span class="edit-btn" style="margin-left: 5px;">
+                        <a href="/edit-sacco?saccoID={{ .ID }}">
+                            <img src="/static/images/edit.svg" alt="Edit" width="16" height="16">
+                        </a>
+                    </span>
+                    <span class="delete-btn" style="margin-left: 5px;" data-saccoid="{{ .ID }}">
+                        <a href="#">
+                            <img src="/static/images/delete.svg" alt="Delete" width="16" height="16">
+                        </a>
+                    </span>
+                    
+                {{ end }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Container for displaying specific SACCO details -->
+    <div id="specificSaccoContent" style="display: none;">
+        <!-- Header for specific SACCO -->
+        <div class="container text-center" id="specificSaccoHeader">
+            <!-- SACCO name will be displayed here -->
+            <h1 class="mt-5 mb-4"></h1>
+        </div>
+
+        <!-- Container for displaying cars, routes and drivers -->
+        <div class="container mt-4" id="specificSaccoDetails">
+            <!-- Cars, routes and drivers tables will be displayed here -->
+            <div id="carsContainer" style="display: none;">
+                <h2 id="carsHeading">Cars</h2>
+                <table id="carsTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Number Plate</th>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>Trips Per Day</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Cars will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="driversContainer" style="display: none;">
+                <h2 id="driversHeading">Drivers</h2>
+                <table id="driversTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>ID Number</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Drivers will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="routesContainer" style="display: none;">
+                <h2 id="routesHeading">Routes</h2>
+                <table id="routesTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Routes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Routes will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Sacco Modal -->
+    <div class="modal fade" id="addSaccoModal" tabindex="-1" role="dialog" aria-labelledby="addSaccoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSaccoModalLabel">Add Sacco</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add sacco form -->
+                    <form id="addSaccoForm" novalidate>
+                        <div class="form-group">
+                            <label for="saccoName">Sacco Name</label>
+                            <input type="text" class="form-control" id="saccoName" name="saccoName" placeholder="Enter Sacco Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="manager">Manager</label>
+                            <input type="text" class="form-control" id="manager" name="manager" placeholder="Manager" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">Contact</label>
+                            <input type="text" class="form-control" id="contact" name="contact" placeholder="Contact" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="submitSaccoBtn">Add Sacco</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Sacco Modal -->
+    <div class="modal fade" id="editSaccoModal" tabindex="-1" role="dialog" aria-labelledby="editSaccoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSaccoModalLabel">Edit Sacco</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Edit sacco form -->
+                    <form id="editSaccoForm" novalidate>
+                        <input type="hidden" id="editSaccoID" name="editSaccoID">
+                        <div class="form-group">
+                            <label for="editSaccoName">Sacco Name</label>
+                            <input type="text" class="form-control" id="editSaccoName" name="editSaccoName" placeholder="Enter Sacco Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editManager">Manager</label>
+                            <input type="text" class="form-control" id="editManager" name="editManager" placeholder="Manager" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editContact">Contact</label>
+                            <input type="text" class="form-control" id="editContact" name="editContact" placeholder="Contact" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveEditSaccoBtn">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+
+    <script src="/static/logout_timer.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Initialize Bootstrap dropdowns
+            $('.dropdown-toggle').dropdown();
+
+            // Submit SACCO form
+            $("#submitSaccoBtn").click(function () {
+                var saccoName = $("#saccoName").val();
+                var manager = $("#manager").val();
+                var contact = $("#contact").val();
+
+                // Validate sacco name field
+                if (!saccoName) {
+                    alert("Sacco name cannot be empty");
+                    return;
+                }
+
+                // Validate manager field
+                if (!manager) {
+                    alert("Manager name cannot be empty");
+                    return;
+                }
+
+                // Validate contact field
+                if (!contact) {
+                    alert("Contact name cannot be empty");
+                    return;
+                }
+
+                var jsonData = {
+                    "saccoName": saccoName,
+                    "manager": manager,
+                    "contact": contact
+                };
+
+                console.log("JSON Data: ", jsonData);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/add-sacco",
+                    data: JSON.stringify(jsonData),
+                    contentType: "application/json",
+                    success: function () {
+                        console.log("Sacco added successfully");
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to add Sacco: ' + error);
+                    },
+                    complete: function () {
+                        $("#addSaccoModal").modal("hide");
+                    }
+                });
+            });
+
+            // Handle edit button click event
+            $('.edit-btn').click(function(event) {
+                event.preventDefault();
+
+                // Extract saccoID from the URL parameter
+                var href = $(this).find('a').attr('href');
+                if (!href) {
+                    console.error('Edit button href attribute is undefined');
+                    return;
+                }
+
+                var urlParams = new URLSearchParams(href.split('?')[1]);
+                var saccoID = urlParams.get('saccoID');
+                console.log("Extracted saccoID:", saccoID);
+
+                // Check if saccoID is null
+                if (saccoID === null) {
+                    console.error('Invalid sacco ID: saccoID is null');
+                    alert("Sacco ID cannot be null");
+                    return;
+                }
+                
+                // Fetch SACCO details from server using AJAX
+                $.get('/get-sacco-details?saccoID=' + saccoID, function(data) {
+                    console.log("AJAX Request URL:", '/get-sacco-details?saccoID=' + saccoID);
+                    // Populate edit modal fields with SACCO details
+                    $('#editSaccoID').val(data.ID);
+                    $('#editSaccoName').val(data.SaccoName);
+                    $('#editManager').val(data.Manager);
+                    $('#editContact').val(data.Contact);
+
+                    // Show the edit modal
+                    $('#editSaccoModal').modal('show');
+                });
+            });
+
+            // Handle close button click event in the edit modal
+            $('.modal').on('click', '[data-dismiss="modal"]', function() {
+                $(this).closest('.modal').modal('hide');
+            });
+
+            // Handle save changes button click event in the edit modal
+            $('#saveEditSaccoBtn').click(function() {
+                // Retrieve edited SACCO details from the edit modal form
+                var saccoID = $('#editSaccoID').val();
+                var saccoName = $('#editSaccoName').val();
+                var manager = $('#editManager').val();
+                var contact = $('#editContact').val();
+
+                // Prepare data to send to the server
+                var jsonData = {
+                    "saccoID": saccoID,
+                    "saccoName": saccoName,
+                    "manager": manager,
+                    "contact": contact
+                };
+
+                // Send updated SACCO details to the server using AJAX
+                $.ajax({
+                    type: "POST",
+                    url: "/edit-sacco",
+                    data: JSON.stringify(jsonData),
+                    contentType: "application/json",
+                    success: function() {
+                        console.log("SACCO details updated successfully");
+                        // Close the edit modal
+                        $('#editSaccoModal').modal('hide');
+
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to update SACCO details:', error);
+                        
+                        alert('Failed to update SACCO details. Please try again.');
+                    }
+                });
+            });
+
+            // Function to handle SACCO deletion
+            $(".delete-btn a").click(function (event) {
+                event.preventDefault(); // Prevent the default behavior of the anchor tag
+
+                var saccoID = $(this).closest('.delete-btn').data("saccoid");
+
+                // Check if SACCO ID is valid
+                if (typeof saccoID !== 'undefined') {
+                    // AJAX request to delete SACCO
+                    $.ajax({
+                        type: "DELETE",
+                        url: "/delete-sacco?saccoID=" + saccoID,
+                        success: function (response) {
+                            location.reload(); // Reload the page after successful deletion
+                            alert("SACCO deleted successfully.");
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error deleting SACCO:", error);
+                            alert("Failed to delete SACCO. Please try again.");
+                        }
+                    });
+                } else {
+                    console.error("Invalid SACCO ID:", saccoID);
+                    alert("Invalid SACCO ID. Please try again.");
+                }
+            });
+
+            // Search functionality
+            $('#searchInput').on('input', function () {
+                var query = $(this).val().trim();
+                if (query.length === 0) {
+                    $("#saccoContent").show();
+                    $('#searchResultsTableContent').hide();
+                    $("#specificSaccoContent").hide();
+                }
+            });
+
+            $('#searchForm').submit(function (event) {
+                event.preventDefault();
+                var query = $('#searchInput').val().trim();
+
+                if (!query) {
+                    alert('Please enter a search query.');
+                    return;
+                }
+
+                // Hide specific SACCO content when performing a search
+                $("#specificSaccoContent").hide();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/search',
+                    data: { q: query },
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log("Search Results:", response);
+                        $("#saccoContent").hide();
+                        $('#searchResultsTableContent').show();
+                        var searchResultsContainer = $('#searchResultsTableContent');
+
+                        if (searchResultsContainer.length === 0) {
+                            searchResultsContainer = $('<table id="searchResultsTableContent" class="table"><thead><tr></tr></thead><tbody></tbody></table>');
+                            $('body').append(searchResultsContainer);
+                        }
+
+                        var tableBody = searchResultsContainer.find('tbody');
+                        var tableHeaderRow = searchResultsContainer.find('thead tr');
+                        tableBody.empty();
+                        tableHeaderRow.empty();
+                        
+                        // Append table headings
+                        tableHeaderRow.append('<th>Result Type</th>');
+                        if (response.Drivers && response.Drivers.length > 0) {
+                            // Append headings for drivers
+                            tableHeaderRow.append('<th>Name</th>');
+                            tableHeaderRow.append('<th>ID Number</th>');
+                            tableHeaderRow.append('<th>Contact</th>');
+                            tableHeaderRow.append('<th>Sacco</th>');
+                        } else if (response.Cars && response.Cars.length > 0) {
+                            // Append headings for cars
+                            tableHeaderRow.append('<th>Number Plate</th>');
+                            tableHeaderRow.append('<th>Make</th>');
+                            tableHeaderRow.append('<th>Model</th>');
+                            tableHeaderRow.append('<th>Sacco</th>');
+                            tableHeaderRow.append('<th>Trips Per Day</th>');
+                        } else if (response.Managers && response.Managers.length > 0) {
+                            // Append headings for managers
+                            tableHeaderRow.append('<th>Name</th>');
+                            tableHeaderRow.append('<th>Contact</th>');
+                            tableHeaderRow.append('<th>Sacco</th>');
+                        } else if (response.Saccos && response.Saccos.length > 0) {
+                            // Append headings for saccos
+                            tableHeaderRow.append('<th>Sacco Name</th>');
+                            tableHeaderRow.append('<th>Manager</th>');
+                            tableHeaderRow.append('<th>Contact</th>');
+                        }
+
+                        if (response && typeof response === 'object') {
+                            if (response.Drivers && Array.isArray(response.Drivers) && response.Drivers.length > 0) {
+                                $.each(response.Drivers, function (index, driver) {
+                                    var row = '<tr>' +
+                                        '<td>Driver</td>' +
+                                        '<td>' + driver.Name + '</td>' +
+                                        '<td>' + driver.IDNumber + '</td>' +
+                                        '<td>' + driver.Contact + '</td>' +
+                                        '<td>' + driver.SaccoName + '</td>' +
+                                        '</tr>';
+                                    tableBody.append(row);
+                                });
+                            }
+
+                            if (response.Cars && Array.isArray(response.Cars) && response.Cars.length > 0) {
+                                $.each(response.Cars, function (index, car) {
+                                    var row = '<tr>' +
+                                        '<td>Car</td>' +
+                                        '<td>' + car.NumberPlate + '</td>' +
+                                        '<td>' + car.Make + '</td>' +
+                                        '<td>' + car.Model + '</td>' +
+                                        '<td>' + car.SaccoName + '</td>' +
+                                        '<td>' + car.Trips + '</td>' +
+                                        '</tr>';
+                                    tableBody.append(row);
+                                });
+                            }
+
+                            if (response.Managers && Array.isArray(response.Managers) && response.Managers.length > 0) {
+                                $.each(response.Managers, function (index, manager) {
+                                    var row = '<tr>' +
+                                        '<td>Manager</td>' +
+                                        '<td>' + manager.Manager + '</td>' +
+                                        '<td>' + manager.Contact + '</td>' +
+                                        '<td>' + manager.SaccoName + '</td>' +
+                                        '</tr>';
+                                    tableBody.append(row);
+                                });
+                            }
+
+                            if (response.Saccos && Array.isArray(response.Saccos) && response.Saccos.length > 0) {
+                                $.each(response.Saccos, function (index, sacco) {
+                                    var row = '<tr>' +
+                                        '<td>Sacco</td>' +
+                                        '<td>' + sacco.SaccoName + '</td>' +
+                                        '<td>' + sacco.Manager + '</td>' +
+                                        '<td>' + sacco.Contact + '</td>' +
+                                        '</tr>';
+                                    tableBody.append(row);
+                                });
+                            }
+                        } else {
+                            console.error('Invalid response:', response);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            // Search suggestions
+            $('#searchInput').on('input', function () {
+                var query = $(this).val().trim();
+                if (query.length > 0) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/search-suggestions',
+                        data: { q: query },
+                        dataType: 'json',
+                        success: function (response) {
+                            displaySuggestions(response);
+
+                            // Hide sacco content when searching
+                            $("#saccoContent").hide();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching search suggestions:', error);
+                        }
+                    });
+                } else {
+                    $("#saccoContent").show();
+                    $('#searchSuggestions').empty();
+                }
+            });
+
+            // Function to display search suggestions
+            function displaySuggestions(suggestions) {
+                var suggestionList = $('#searchSuggestions');
+                suggestionList.empty();
+                if (suggestions && suggestions.length > 0) {
+                    $.each(suggestions, function (index, suggestion) {
+                        suggestionList.append('<div class="suggestion-link">' + suggestion + '</div>');
+                    });
+
+                    // Hide SACCO link details when displaying suggestions
+                    $("#specificSaccoContent").hide();
+                    
+                } else {
+                    suggestionList.append('<div>No suggestions found</div>');
+                }
+            }
+
+            // JavaScript code for hiding suggestions after clicking a suggestion
+            function hideSuggestions() {
+                $('#searchSuggestions').empty(); // Clear the suggestion list
+                $('#searchSuggestions').hide(); // Hide the suggestion list container
+            }
+
+            // Fetch details of selected suggestion
+            $(document).on("click", ".suggestion-link", function () {
+                var suggestion = $(this).text().trim();
+                console.log(suggestion);
+                fetchDetails(suggestion); // Fetch details for the clicked suggestion
+                hideSuggestions(); // Hide suggestions after clicking
+            });
+
+            function fetchDetails(suggestion) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/get-details',
+                    data: { suggestion: suggestion },
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log("Details:", response);
+                        displayDetails(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching details:', error);
+                    }
+                });
+            }
+
+            function displayDetails(details) {
+                var detailsContainer = $('#detailsContainer');
+                detailsContainer.empty();
+
+                if (details && Object.keys(details).length > 0) {
+                    $.each(details, function (key, value) {
+                        detailsContainer.append('<div><strong>' + key + ':</strong> ' + value + '</div>');
+                    });
+                } else {
+                    detailsContainer.append('<div>No details found</div>');
+                }
+            }
+
+            // Event listener for SACCO link click
+            $(document).ready(function () {
+                // Push state when SACCO link is clicked
+                $(".sacco-link").click(function (e) {
+                    e.preventDefault();
+                    var saccoID = $(this).data("saccoid");
+                    var saccoName = $(this).text().trim();
+
+                    // Push state to history
+                    history.pushState({ page: "specificSacco", saccoID: saccoID }, saccoName, '?sacco=' + saccoID);
+
+                    // Fetch SACCO details and show specific SACCO content
+                    fetchSaccoDetails(saccoID, saccoName);
+                });
+
+                // Listen for popstate event (browser back/forward buttons)
+                $(window).on('popstate', function (e) {
+                    var state = e.originalEvent.state;
+                    if (state && state.page === 'specificSacco') {
+                        fetchSaccoDetails(state.saccoID, document.title); // Fetch SACCO details based on state
+                    } else {
+                        // If not specific SACCO page, show default SACCO content
+                        showDefaultSaccoContent();
+                    }
+                });
+
+                // Function to fetch SACCO details and show specific SACCO content
+                function fetchSaccoDetails(saccoID, saccoName) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/get-cars-and-drivers-routes?saccoID=" + saccoID,
+                        success: function (data) {
+                            console.log("Cars, drivers, and routes data retrieved successfully:", data);
+                            $("#specificSaccoHeader h1").text(saccoName);
+                            renderCars(data.Cars);
+                            renderDrivers(data.Drivers);
+                            renderRoutes(data.Routes);
+                            $("#saccoContent").hide();
+                            $("#specificSaccoContent").show();
+                            $("#specificSaccoDetails").show();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error fetching cars and drivers:", error);
+                            alert("Failed to fetch cars and drivers. Please try again.");
+                        }
+                    });
+                }
+
+                // Function to show default SACCO content
+                function showDefaultSaccoContent() {
+                    $("#saccoContent").show();
+                    $("#specificSaccoContent").hide();
+                    $("#specificSaccoDetails").hide();
+                }
+
+                // Initial check for state on page load
+                if (window.location.search.indexOf('sacco=') === -1) {
+                    // If no specific SACCO query parameter is present, show default SACCO content
+                    showDefaultSaccoContent();
+                }
+            });
+
+            function renderCars(cars) {
+                var carsTableBody = $("#carsTable tbody");
+                carsTableBody.empty();
+
+                if (cars && cars.length > 0) {
+                    $.each(cars, function (index, car) {
+                        var row = "<tr><td>" + car.NumberPlate + "</td><td>" + car.Make + "</td><td>" + car.Model + "</td><td>" + car.Trips + "</td></tr>";
+                        carsTableBody.append(row);
+                    });
+                    $("#carsContainer").show(); // Show cars container if there are cars
+                } else {
+                    // Show message if no cars available
+                    carsTableBody.html('<tr><td colspan="3">No cars available</td></tr>');
+                    $("#carsContainer").show(); // Show cars container with message
+                }
+            }
+
+            function renderDrivers(drivers) {
+                var driversTableBody = $("#driversTable tbody");
+                driversTableBody.empty();
+
+                if (drivers && drivers.length > 0) {
+                    $.each(drivers, function (index, driver) {
+                        var row = "<tr><td>" + driver.Name + "</td><td>" + driver.IDNumber + "</td><td>" + driver.Contact + "</td></tr>";
+                        driversTableBody.append(row);
+                    });
+                    $("#driversContainer").show(); // Show drivers container if there are drivers
+                } else {
+                    // Show message if no drivers available
+                    driversTableBody.html('<tr><td colspan="3">No drivers available</td></tr>');
+                    $("#driversContainer").show(); // Show drivers container with message
+                }
+            }
+
+            function renderRoutes(routes) {
+                var routesTableBody = $("#routesTable tbody");
+                routesTableBody.empty();
+
+                if (routes && routes.length > 0) {
+                    $.each(routes, function (index, route) {
+                        // var row = "<tr><td>" + route.Checkpoint + "</td></tr>";
+                        var row = "<tr><td>" + route.ID + "</td><td>" + route.Checkpoints.join(', ') + "</td></tr>";
+                        routesTableBody.append(row);
+                    });
+                    $("#routesContainer").show();
+                } else {
+                    routesTableBody.html('<tr><td colspan="3">No Routes available for this sacco</td></tr>');
+                    $("#routesContainer").show();
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
+{{ end }}
