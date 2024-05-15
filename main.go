@@ -6,8 +6,10 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -16,12 +18,35 @@ var (
 )
 
 func main() {
-	var err error
-	db, err = sql.Open("mysql", "root:Developer2023@tcp(localhost:3306)/fleet")
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// Get database credentials from environment variables
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	// Construct database connection string
+	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
+
+	// Open database connection
+	db, err = sql.Open("mysql", dbURI)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	// Ping database to check connection
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Connected to database!")
 
 	// Serve all the satic files of HTML, CSS and JS
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
