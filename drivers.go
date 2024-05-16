@@ -10,15 +10,25 @@ import (
 	"strconv"
 )
 
+//	type Driver struct {
+//		ID          int
+//		Name        string
+//		IDNumber    int
+//		Contact     string
+//		CarID       int
+//		SaccoID     int
+//		NumberPlate string
+//		SaccoName   string
+//	}
 type Driver struct {
-	ID          int
+	ID          int `json:"id"`
 	Name        string
-	IDNumber    int
+	IDNumber    string
 	Contact     string
-	CarID       int
-	SaccoID     int
-	NumberPlate string
-	SaccoName   string
+	CarID       int    `json:"-"`
+	NumberPlate string `json:"number_plate"`
+	SaccoID     int    `json:"-"`
+	SaccoName   string `json:"sacco_name"`
 }
 
 func driversHandler(w http.ResponseWriter, r *http.Request) {
