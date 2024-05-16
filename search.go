@@ -160,7 +160,7 @@ func searchCarInDB(query string) ([]Car, error) {
 
 		// Set default value if SaccoID is 0
 		if saccoID == 0 {
-			saccoID = -1 // Or any other default value you prefer
+			saccoID = -1
 		}
 
 		// Assign values to the Car struct
@@ -176,6 +176,58 @@ func searchCarInDB(query string) ([]Car, error) {
 	return results, nil
 }
 
+// func searchDriverInDB(query string) ([]Driver, error) {
+// 	var results []Driver
+
+// 	// Query database to search for drivers along with related car and sacco information
+// 	rows, err := db.Query(`
+//         SELECT drivers.id, drivers.name, drivers.id_number, drivers.contact,
+//                COALESCE(cars.number_plate, '') AS number_plate,
+//                COALESCE(saccos.sacco_name, '') AS sacco_name,
+//                drivers.car_id, drivers.sacco_id
+//         FROM drivers
+//         LEFT JOIN cars ON drivers.car_id = cars.id
+//         LEFT JOIN saccos ON drivers.sacco_id = saccos.id
+//         WHERE drivers.name LIKE ? OR drivers.id_number LIKE ? OR drivers.contact LIKE ?
+//     `, "%"+query+"%", "%"+query+"%", "%"+query+"%")
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
+
+// 	for rows.Next() {
+// 		var driver Driver
+// 		var carID, saccoID int // Temporary variables to hold the scanned values
+// 		// Scan the results into temporary variables
+// 		err := rows.Scan(&driver.ID, &driver.Name, &driver.IDNumber, &driver.Contact,
+// 			&driver.NumberPlate, &driver.SaccoName, &carID, &saccoID)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		// Set default values if CarID or SaccoID is 0
+// 		if carID == 0 {
+// 			carID = -1 // Or any other default value you prefer
+// 		}
+// 		if saccoID == 0 {
+// 			saccoID = -1 // Or any other default value you prefer
+// 		}
+
+// 		// Assign values to the Driver struct
+// 		driver.CarID = carID
+// 		driver.SaccoID = saccoID
+
+// 		// Append the driver to the results slice
+// 		results = append(results, driver)
+// 	}
+
+// 	// Log the results
+// 	// log.Println("Driver search results:", results)
+
+//		return results, nil
+//	}
+//
+// Search for drivers in the database and retrieve relevant information
 func searchDriverInDB(query string) ([]Driver, error) {
 	var results []Driver
 
@@ -183,8 +235,7 @@ func searchDriverInDB(query string) ([]Driver, error) {
 	rows, err := db.Query(`
         SELECT drivers.id, drivers.name, drivers.id_number, drivers.contact,
                COALESCE(cars.number_plate, '') AS number_plate,
-               COALESCE(saccos.sacco_name, '') AS sacco_name,
-               drivers.car_id, drivers.sacco_id
+               COALESCE(saccos.sacco_name, '') AS sacco_name
         FROM drivers
         LEFT JOIN cars ON drivers.car_id = cars.id
         LEFT JOIN saccos ON drivers.sacco_id = saccos.id
@@ -195,34 +246,22 @@ func searchDriverInDB(query string) ([]Driver, error) {
 	}
 	defer rows.Close()
 
+	// Iterate over the rows
 	for rows.Next() {
 		var driver Driver
-		var carID, saccoID int // Temporary variables to hold the scanned values
-		// Scan the results into temporary variables
+		// Scan the results into the Driver struct
 		err := rows.Scan(&driver.ID, &driver.Name, &driver.IDNumber, &driver.Contact,
-			&driver.NumberPlate, &driver.SaccoName, &carID, &saccoID)
+			&driver.NumberPlate, &driver.SaccoName)
 		if err != nil {
 			return nil, err
 		}
-
-		// Set default values if CarID or SaccoID is 0
-		if carID == 0 {
-			carID = -1 // Or any other default value you prefer
-		}
-		if saccoID == 0 {
-			saccoID = -1 // Or any other default value you prefer
-		}
-
-		// Assign values to the Driver struct
-		driver.CarID = carID
-		driver.SaccoID = saccoID
-
 		// Append the driver to the results slice
 		results = append(results, driver)
 	}
 
-	// Log the results
-	// log.Println("Driver search results:", results)
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	return results, nil
 }
@@ -554,9 +593,13 @@ func getDriverDetails(suggestion string) ([]Driver, error) {
 
 	var drivers []Driver
 	query := `
-        SELECT id, name, id_number, contact, car_id, sacco_id
+        SELECT drivers.id, drivers.name, drivers.id_number, drivers.contact,
+               COALESCE(cars.number_plate, '') AS number_plate,
+               COALESCE(saccos.sacco_name, '') AS sacco_name
         FROM drivers
-        WHERE name = ? OR id_number = ? OR contact = ?
+        LEFT JOIN cars ON drivers.car_id = cars.id
+        LEFT JOIN saccos ON drivers.sacco_id = saccos.id
+        WHERE drivers.name = ? OR drivers.id_number = ? OR drivers.contact = ?
     `
 
 	// Execute the query
@@ -569,7 +612,7 @@ func getDriverDetails(suggestion string) ([]Driver, error) {
 	// Iterate over the rows
 	for rows.Next() {
 		var driver Driver
-		err := rows.Scan(&driver.ID, &driver.Name, &driver.IDNumber, &driver.Contact, &driver.CarID, &driver.SaccoID)
+		err := rows.Scan(&driver.ID, &driver.Name, &driver.IDNumber, &driver.Contact, &driver.NumberPlate, &driver.SaccoName)
 		if err != nil {
 			return nil, err
 		}
