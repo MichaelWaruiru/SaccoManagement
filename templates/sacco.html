@@ -9,6 +9,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="/static/images/bus.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="/static/sacco.css">
+    <link rel="stylesheet" href="/static/footer.css">
 </head>
 <body>
     <!-- Container for displaying search suggestions -->
@@ -349,9 +350,12 @@
             $('#searchInput').on('input', function () {
                 var query = $(this).val().trim();
                 if (query.length === 0) {
+                    location.reload();
                     $("#saccoContent").show();
                     $('#searchResultsTableContent').hide();
                     $("#specificSaccoContent").hide();
+                    // Clear the details when the search input is cleared
+                    clearDetails();
                 }
             });
 
@@ -548,17 +552,65 @@
                 });
             }
 
-            function displayDetails(details) {
-                var detailsContainer = $('#detailsContainer');
-                detailsContainer.empty();
+            // function displayDetails(details) {
+            //     var detailsContainer = $('#detailsContainer');
+            //     detailsContainer.empty();
 
-                if (details && Object.keys(details).length > 0) {
-                    $.each(details, function (key, value) {
-                        detailsContainer.append('<div><strong>' + key + ':</strong> ' + value + '</div>');
+            //     if (details && Object.keys(details).length > 0) {
+            //         $.each(details, function (key, value) {
+            //             detailsContainer.append('<div><strong>' + key + ':</strong> ' + value + '</div>');
+            //         });
+            //     } else {
+            //         detailsContainer.append('<div>No details found</div>');
+            //     }
+            // }
+            // Display details of selected suggestion
+    function displayDetails(details) {
+        var detailsContainer = $('#detailsContainer');
+        detailsContainer.empty();
+    
+        if (details && Object.keys(details).length > 0) {
+            var table = $('<table>').addClass('details-table');
+            var tableBody = $('<tbody>');
+    
+            // Row for headings
+            var headingsRow = $('<tr>');
+            $.each(details, function (key, value) {
+                if (typeof value === 'object') {
+                    // If the value is an object, iterate over its properties and add them as headings
+                    $.each(value, function (subKey, _) {
+                        headingsRow.append($('<th>').text(subKey));
                     });
                 } else {
-                    detailsContainer.append('<div>No details found</div>');
+                    headingsRow.append($('<th>').text(key));
                 }
+            });
+            tableBody.append(headingsRow);
+    
+            // Row for details
+            var detailsRow = $('<tr>');
+            $.each(details, function (_, value) {
+                if (typeof value === 'object') {
+                    // If the value is an object, iterate over its properties and add them as row data
+                    $.each(value, function (_, subValue) {
+                        detailsRow.append($('<td>').text(subValue));
+                    });
+                } else {
+                    detailsRow.append($('<td>').text(value));
+                }
+            });
+            tableBody.append(detailsRow);
+    
+            table.append(tableBody);
+            detailsContainer.append(table);
+        } else {
+            detailsContainer.append('<div>No details found</div>');
+        }
+    }
+
+            // Hiding display results after clicking a suggestion
+            function clearDetails() {
+                $('#detailsContainer').empty(); // Clear the display list
             }
 
             // Event listener for SACCO link click
@@ -678,4 +730,5 @@
 
 </body>
 </html>
+{{ template "footer" }}
 {{ end }}

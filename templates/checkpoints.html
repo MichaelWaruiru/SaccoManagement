@@ -1,5 +1,7 @@
 {{ define "checkpoints" }}
     <link rel="stylesheet" href="/static/sacco.css">
+    <link rel="stylesheet" href="/static/footer.css">
+    
     <!-- Search suggestions container -->
     <div id="searchSuggestions" class="suggestion-list"></div>
 
@@ -87,5 +89,6 @@
                 }
             });
         });
-    </script>    
+    </script>
+    {{ template "footer" }}
 {{ end }}
