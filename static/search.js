@@ -3,13 +3,21 @@ $(document).ready(function () {
     $('#searchInput').on('input', function () {
         var query = $(this).val().trim();
         if (query.length === 0) {
-            location.reload();
+            // location.reload();
             $("#saccoContent").show();
             $('#searchResultsTableContent').hide();
             $("#specificSaccoContent").hide();
             // Clear the details when the search input is cleared
             clearDetails();
         }
+    });
+
+    // Focuses on search input when searching
+    $(document).ready(function() {
+        $("#button").click(function() {
+          $("#searchform").slideToggle("fast");
+          $('#search').focus();
+        });
     });
     
     $('#searchForm').submit(function (event) {

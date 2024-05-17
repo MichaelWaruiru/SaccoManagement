@@ -60,3 +60,6 @@
 .sacco-link:hover .delete-btn {
     opacity: 1;
 } */
+
+/* CSS for search form to enable cursor focus */
+#searchform { display: none; }
