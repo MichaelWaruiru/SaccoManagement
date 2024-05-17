@@ -3,9 +3,12 @@ $(document).ready(function () {
     $('#searchInput').on('input', function () {
         var query = $(this).val().trim();
         if (query.length === 0) {
+            location.reload();
             $("#saccoContent").show();
             $('#searchResultsTableContent').hide();
             $("#specificSaccoContent").hide();
+            // Clear the details when the search input is cleared
+            clearDetails();
         }
     });
     
@@ -165,6 +168,11 @@ $(document).ready(function () {
                 suggestionList.append('<div class="suggestion-link">' + suggestion + '</div>');
             });
 
+            // Show the search suggestions container
+            suggestionList.show();
+
+            clearDetails();
+
             // Hide SACCO link details when displaying suggestions
             $("#specificSaccoContent").hide();
 
@@ -173,7 +181,7 @@ $(document).ready(function () {
         }
     }
 
-    // JavaScript code for hiding suggestions after clicking a suggestion
+    // Hiding suggestions after clicking a suggestion
     function hideSuggestions() {
         $('#searchSuggestions').empty(); // Clear the suggestion list
         $('#searchSuggestions').hide(); // Hide the suggestion list container
@@ -202,17 +210,53 @@ $(document).ready(function () {
         });
     }
 
+    // Display details of selected suggestion
     function displayDetails(details) {
         var detailsContainer = $('#detailsContainer');
         detailsContainer.empty();
-
+    
         if (details && Object.keys(details).length > 0) {
+            var table = $('<table>').addClass('details-table');
+            var tableBody = $('<tbody>');
+    
+            // Row for headings
+            var headingsRow = $('<tr>');
             $.each(details, function (key, value) {
-                detailsContainer.append('<div><strong>' + key + ':</strong> ' + value + '</div>');
+                if (typeof value === 'object') {
+                    // If the value is an object, iterate over its properties and add them as headings
+                    $.each(value, function (subKey, _) {
+                        headingsRow.append($('<th>').text(subKey));
+                    });
+                } else {
+                    headingsRow.append($('<th>').text(key));
+                }
             });
+            tableBody.append(headingsRow);
+    
+            // Row for details
+            var detailsRow = $('<tr>');
+            $.each(details, function (_, value) {
+                if (typeof value === 'object') {
+                    // If the value is an object, iterate over its properties and add them as row data
+                    $.each(value, function (_, subValue) {
+                        detailsRow.append($('<td>').text(subValue));
+                    });
+                } else {
+                    detailsRow.append($('<td>').text(value));
+                }
+            });
+            tableBody.append(detailsRow);
+    
+            table.append(tableBody);
+            detailsContainer.append(table);
         } else {
             detailsContainer.append('<div>No details found</div>');
         }
+    }
+
+    // Hiding display results after clicking a suggestion
+    function clearDetails() {
+        $('#detailsContainer').empty(); // Clear the display list
     }
 
     // Function to hide page details table
