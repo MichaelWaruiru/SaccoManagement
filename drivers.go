@@ -28,7 +28,7 @@ type Driver struct {
 	CarID       int    `json:"-"`
 	NumberPlate string `json:"number_plate"`
 	SaccoID     int    `json:"-"`
-	SaccoName   string `json:"sacco_name"`
+	SaccoName   string // `json:"sacco_name"`
 }
 
 func driversHandler(w http.ResponseWriter, r *http.Request) {
