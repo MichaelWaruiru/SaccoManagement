@@ -350,13 +350,21 @@
             $('#searchInput').on('input', function () {
                 var query = $(this).val().trim();
                 if (query.length === 0) {
-                    location.reload();
+                    // location.reload();
                     $("#saccoContent").show();
                     $('#searchResultsTableContent').hide();
                     $("#specificSaccoContent").hide();
                     // Clear the details when the search input is cleared
                     clearDetails();
                 }
+            });
+
+            // Focuses on search input when searching
+            $(document).ready(function() {
+                $("#button").click(function() {
+                $("#searchform").slideToggle("fast");
+                $('#search').focus();
+                });
             });
 
             $('#searchForm').submit(function (event) {
@@ -370,6 +378,9 @@
 
                 // Hide specific SACCO content when performing a search
                 $("#specificSaccoContent").hide();
+
+                // Hide and clear suggestions
+                hideSuggestions();
 
                 $.ajax({
                     type: 'GET',
@@ -513,6 +524,12 @@
                     $.each(suggestions, function (index, suggestion) {
                         suggestionList.append('<div class="suggestion-link">' + suggestion + '</div>');
                     });
+
+                    // Show the search suggestions container
+                    suggestionList.show();
+
+                    // Clear displayed details
+                    clearDetails();
 
                     // Hide SACCO link details when displaying suggestions
                     $("#specificSaccoContent").hide();

@@ -33,6 +33,36 @@
     text-align: center;
 }
 
+#searchSuggestions {
+    margin-top: 2dvh;
+}
+
+/* Style for displaying the searched details populated table results */
+#detailsContainer {
+    display: flex;
+    align-items: center;
+    width: auto;
+    margin-top: 5dvh;
+}
+
+.details-table {
+    width: 100%;
+    max-width: 1000px;
+    border-collapse: collapse;
+}
+
+.details-table th, .details-table td {
+    padding: 8px 16px;
+    border-bottom: 1px solid #ddd;
+    /* text-align: left; */
+}
+
+.details-table th,
+#searchResultsTableContent th, 
+th {
+    background-color: #28dd17;
+}
+
 /* Media query for adjusting suggestion list positioning on smaller screens */
 @media (max-width: 768px) {
     #searchSuggestions {

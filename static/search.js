@@ -32,6 +32,9 @@ $(document).ready(function () {
         // Hide specific SACCO content when performing a search
         $("#specificSaccoContent").hide();
 
+        // Hide and clear suggestions
+        hideSuggestions();
+
         $.ajax({
             type: 'GET',
             url: '/search',
@@ -179,6 +182,7 @@ $(document).ready(function () {
             // Show the search suggestions container
             suggestionList.show();
 
+            // Clear displayed details
             clearDetails();
 
             // Hide SACCO link details when displaying suggestions
