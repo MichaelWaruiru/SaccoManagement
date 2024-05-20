@@ -569,61 +569,49 @@
                 });
             }
 
-            // function displayDetails(details) {
-            //     var detailsContainer = $('#detailsContainer');
-            //     detailsContainer.empty();
-
-            //     if (details && Object.keys(details).length > 0) {
-            //         $.each(details, function (key, value) {
-            //             detailsContainer.append('<div><strong>' + key + ':</strong> ' + value + '</div>');
-            //         });
-            //     } else {
-            //         detailsContainer.append('<div>No details found</div>');
-            //     }
-            // }
             // Display details of selected suggestion
-    function displayDetails(details) {
-        var detailsContainer = $('#detailsContainer');
-        detailsContainer.empty();
-    
-        if (details && Object.keys(details).length > 0) {
-            var table = $('<table>').addClass('details-table');
-            var tableBody = $('<tbody>');
-    
-            // Row for headings
-            var headingsRow = $('<tr>');
-            $.each(details, function (key, value) {
-                if (typeof value === 'object') {
-                    // If the value is an object, iterate over its properties and add them as headings
-                    $.each(value, function (subKey, _) {
-                        headingsRow.append($('<th>').text(subKey));
+            function displayDetails(details) {
+                var detailsContainer = $('#detailsContainer');
+                detailsContainer.empty();
+            
+                if (details && Object.keys(details).length > 0) {
+                    var table = $('<table>').addClass('details-table');
+                    var tableBody = $('<tbody>');
+            
+                    // Row for headings
+                    var headingsRow = $('<tr>');
+                    $.each(details, function (key, value) {
+                        if (typeof value === 'object') {
+                            // If the value is an object, iterate over its properties and add them as headings
+                            $.each(value, function (subKey, _) {
+                                headingsRow.append($('<th>').text(subKey));
+                            });
+                        } else {
+                            headingsRow.append($('<th>').text(key));
+                        }
                     });
-                } else {
-                    headingsRow.append($('<th>').text(key));
-                }
-            });
-            tableBody.append(headingsRow);
-    
-            // Row for details
-            var detailsRow = $('<tr>');
-            $.each(details, function (_, value) {
-                if (typeof value === 'object') {
-                    // If the value is an object, iterate over its properties and add them as row data
-                    $.each(value, function (_, subValue) {
-                        detailsRow.append($('<td>').text(subValue));
+                    tableBody.append(headingsRow);
+            
+                    // Row for details
+                    var detailsRow = $('<tr>');
+                    $.each(details, function (_, value) {
+                        if (typeof value === 'object') {
+                            // If the value is an object, iterate over its properties and add them as row data
+                            $.each(value, function (_, subValue) {
+                                detailsRow.append($('<td>').text(subValue));
+                            });
+                        } else {
+                            detailsRow.append($('<td>').text(value));
+                        }
                     });
+                    tableBody.append(detailsRow);
+            
+                    table.append(tableBody);
+                    detailsContainer.append(table);
                 } else {
-                    detailsRow.append($('<td>').text(value));
+                    detailsContainer.append('<div>No details found</div>');
                 }
-            });
-            tableBody.append(detailsRow);
-    
-            table.append(tableBody);
-            detailsContainer.append(table);
-        } else {
-            detailsContainer.append('<div>No details found</div>');
-        }
-    }
+            }
 
             // Hiding display results after clicking a suggestion
             function clearDetails() {
