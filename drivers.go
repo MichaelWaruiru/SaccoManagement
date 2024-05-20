@@ -26,7 +26,7 @@ type Driver struct {
 	IDNumber    string
 	Contact     string
 	CarID       int    `json:"-"`
-	NumberPlate string `json:"number_plate"`
+	NumberPlate string // `json:"number_plate"`
 	SaccoID     int    `json:"-"`
 	SaccoName   string // `json:"sacco_name"`
 }
