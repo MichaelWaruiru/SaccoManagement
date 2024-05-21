@@ -512,6 +512,12 @@ func getDirectDetails(suggestion string) (interface{}, error) {
 		return carDetails, nil
 	}
 
+	// Check if suggestion matches manager's name
+	managerDetails, err := getSaccoDetailsByManager(suggestion)
+	if err == nil && managerDetails != nil {
+		return managerDetails, nil
+	}
+
 	// If no direct match found, return nil without error
 	return nil, nil
 }
@@ -625,4 +631,25 @@ func getDriverDetails(suggestion string) ([]Driver, error) {
 	}
 
 	return drivers, nil
+}
+
+// Fetch managers details from the saccos table
+func getSaccoDetailsByManager(manager string) (*Sacco, error) {
+	log.Printf("Executing query to get sacco details for manager '%s'\n", manager)
+
+	var sacco Sacco
+
+	// Query to retrieve manager's details
+	query := "SELECT id, sacco_name, manager, contact FROM saccos WHERE manager = ?"
+
+	// Execute the query
+	err := db.QueryRow(query, manager).Scan(&sacco.ID, &sacco.SaccoName, &sacco.Manager, &sacco.Contact)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Suggestion not found, return nil without error
+		}
+		return nil, err
+	}
+
+	return &sacco, nil
 }
