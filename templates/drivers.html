@@ -173,30 +173,6 @@
         $(document).ready(function () {
             // Initialize Bootstrap dropdowns
             $('.dropdown-toggle').dropdown();
-
-            // Function to hide home details table
-            function hideHomeDetailsTable() {
-                $(".table").hide();
-                $("h1").hide();
-            }
-
-            // Function to show home details table
-            function showHomeDetailsTable() {
-                $(".table").show();
-                $("h1").show();
-            }
-
-            // Event listener for search input to hide home details
-            $('#searchInput').on('input', function () {
-                var query = $(this).val().trim();
-                if (query.length > 0) {
-                    // Hide details table when search is performed
-                    hideHomeDetailsTable();
-                } else {
-                    // Show details table when search input is empty
-                    showHomeDetailsTable();
-                }
-            });
         });
         
         // AJAX Form Submission
