@@ -26,10 +26,10 @@ func main() {
 
 	// Get database credentials from environment variables
 	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
+	dbPassword := os.Getenv("DB_PASSWORD")
 
 	// Construct database connection string
 	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
@@ -65,6 +65,7 @@ func main() {
 	http.HandleFunc("/delete-sacco", deleteSaccoHandler)
 
 	http.HandleFunc("/get-cars-and-drivers-routes", getCarsAndDriversAndRoutesHandler)
+	http.HandleFunc("/filter-trips", filterTripsHandler)
 
 	http.HandleFunc("/cars", carsHandler)
 	http.HandleFunc("/add-car", addCarHandler)
