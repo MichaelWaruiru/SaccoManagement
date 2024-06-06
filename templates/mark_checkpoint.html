@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="/static/css/footer.css">
 
     <!-- Search suggestions container -->
-   <div id="searchSuggestions" class="suggestion-list"></div>
+    <div id="searchSuggestions" class="suggestion-list"></div>
 
     <!-- Details container -->
     <div id="detailsContainer"></div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="routeSelect" class="form-label">Select Route:</label>
-                    <select  class="form-select" id="routeSelect" name="routeSelect" required>
+                    <select class="form-select" id="routeSelect" name="routeSelect" required>
                         <option value="" selected disabled>Select Route</option>
                         {{ range .Checkpoints }}
                         <option value="{{ .ID }}">{{ .CheckpointName }}</option>
@@ -185,7 +185,7 @@
                         data.forEach(function(checkpoint) {
                             $("#markedCheckpointsTable").append(
                                 `<tr>
-                                    <td>${checkpoint.CheckpointName}</td>
+                                    <td>${checkpoint.RouteName}</td>
                                     <td>${checkpoint.CheckpointName}</td>
                                     <td>${checkpoint.NumberPlate}</td>
                                     <td>${checkpoint.Time}</td>
@@ -224,7 +224,7 @@
             }
 
             // Set the current date in the date filter
-            var today = new Date().toISOString().split('T')[0];
+            var today = getFormattedLocalDate(new Date());
             $('#tripsFilterDatePicker').val(today);
             $('#markedFilterDatePicker').val(today);
 
@@ -232,7 +232,7 @@
             filterTrips("", today);
 
             // Populate marked checkpoints table on page load with current date
-            populateMarkedCheckpoints(getFormattedDate(new Date()));
+            populateMarkedCheckpoints(today);
 
             // Populate trips table on page load with all trips data
             filterTrips("", today);
@@ -250,11 +250,8 @@
                 populateMarkedCheckpoints(selectedDate);
             });
 
-            // Populate marked checkpoints table on page load with current date
-            populateMarkedCheckpoints(today);
-
-            // Function to format date as YYYY-MM-DD
-            function getFormattedDate(date) {
+            // Function to format date as YYYY-MM-DD taking local timezone into account
+            function getFormattedLocalDate(date) {
                 var year = date.getFullYear();
                 var month = (date.getMonth() + 1).toString().padStart(2, '0');
                 var day = date.getDate().toString().padStart(2, '0');
