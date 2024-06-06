@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="/static/login.css">
+    <link rel="stylesheet" href="/static/css/login.css">
     <link rel="icon" href="/static/images/bus.ico" type="image/x-icon">
 </head>
 <body class="login-body">
@@ -19,9 +19,12 @@
             <br>
             <input type="submit" value="Login" style="cursor: pointer; background-color: rgb(8, 240, 39);">
             <p>Don't have an account yet? <a href="/signup">Sign Up</a></p>
+            {{ if .FlashMessage }}
+                <p style="color: red;">{{ .FlashMessage }}</p>
+            {{ end }}
         </form>
     </div>
 
-    <!-- <script src="/static/logout_timer.js"></script> -->
+    <!-- <script src="/static/js/logout_timer.js"></script> -->
 </body>
 </html>

@@ -109,6 +109,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		err := db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&storedPasswordHash)
 		if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword(storedPasswordHash, []byte(password)) != nil {
 			// Invalid login credentials
+			setFlashMessage(w, r, "Invalid username or password")
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
@@ -123,7 +124,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "login.html", nil)
+	// Display the login page with flash message
+	flashMessage := getFlashMessage(w, r)
+	data := struct {
+		FlashMessage string
+	}{
+		FlashMessage: flashMessage,
+	}
+
+	tmpl.ExecuteTemplate(w, "login.html", data)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
