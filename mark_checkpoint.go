@@ -36,13 +36,22 @@ func markCheckpointHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	routes, err := getRoutes()
+	if err != nil {
+		http.Error(w, "Failed to fetch routes", http.StatusInternalServerError)
+		log.Println("Error fetching routes:", routes)
+		return
+	}
+
 	// Data to pass to the template
 	data := struct {
 		Checkpoints []Checkpoint
 		Cars        []Car
+		Routes      []Route
 	}{
 		Checkpoints: checkpoints,
 		Cars:        cars,
+		Routes:      routes,
 	}
 
 	// Execute menu template
@@ -78,21 +87,23 @@ func addMarkCheckpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Extract form values
+	routeID := r.Form.Get("routeSelect")
 	checkpointID := r.Form.Get("checkpointSelect")
 	carID := r.Form.Get("carSelect")
 	timeStr := r.Form.Get("timePicker")
 	dateStr := r.Form.Get("datePicker")
 
 	// Validate form data
-	if checkpointID == "" || carID == "" || timeStr == "" || dateStr == "" {
+	if routeID == "" || checkpointID == "" || carID == "" || timeStr == "" || dateStr == "" {
 		http.Error(w, "Invalid form data", http.StatusBadRequest)
 		log.Println("Invalid form data")
 		return
 	}
 
-	// log.Println("Checkpoint ID:", checkpointID)
+	log.Println("Checkpoint ID:", checkpointID)
 	// log.Println("Car ID:", carID)
 	// log.Println("Time:", timeStr)
+	log.Println("Route ID: ", routeID)
 
 	// Validate time format
 	if timeStr == "" {
@@ -111,7 +122,7 @@ func addMarkCheckpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert data into the marked_checkpoints table
-	err = insertMarkedCheckpoint(checkpointID, carID, checkpointTime)
+	err = insertMarkedCheckpoint(routeID, checkpointID, carID, checkpointTime)
 	if err != nil {
 		http.Error(w, "Failed to insert marked checkpoint", http.StatusInternalServerError)
 		log.Println("Error inserting marked checkpoint:", err)
@@ -125,21 +136,24 @@ func addMarkCheckpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 // Function to insert marked checkpoint into the database
-func insertMarkedCheckpoint(checkpointID, carID string, checkpointTime time.Time) error {
-	query := "INSERT INTO marked_checkpoints (checkpoint_id, car_id, checkpoint_time, checkpoint_date) VALUES (?, ?, ?, ?)"
-	_, err := db.Exec(query, checkpointID, carID, checkpointTime, checkpointTime.Format("2006-01-02"))
+func insertMarkedCheckpoint(routeID, checkpointID, carID string, checkpointTime time.Time) error {
+	query := "INSERT INTO marked_checkpoints (route_id, checkpoint_id, car_id, checkpoint_time, checkpoint_date) VALUES (?, ?, ?, ?, ?)"
+	_, err := db.Exec(query, routeID, checkpointID, carID, checkpointTime, checkpointTime.Format("2006-01-02"))
 	if err != nil {
 		return err
 	}
 
-	// log.Printf("Inserting marked checkpoint: CheckpointID=%s, CarID=%s, Time=%s", checkpointID, carID, checkpointTime.Format("2006-01-02 15:04:05"))
+	// log.Printf("Inserting marked checkpoint: RouteID=%s, CheckpointID=%s, CarID=%s, Time=%s", routeID, checkpointID, carID, checkpointTime.Format("2006-01-02 15:04:05"))
 	return nil
 }
 
 // Handler to fetch marked checkpoints data
 func getMarkedCheckpointsHandler(w http.ResponseWriter, r *http.Request) {
+	// Fetch data parameter from the URL query string
+	date := r.FormValue("date")
+
 	// Fetch marked checkpoints from the database or any other data source
-	markedCheckpoints, err := getMarkedCheckpointsFromDB()
+	markedCheckpoints, err := getMarkedCheckpointsFromDB(date)
 	if err != nil {
 		http.Error(w, "Failed to fetch marked checkpoints", http.StatusInternalServerError)
 		log.Println("Failed to fetch marked checkpoints from the DB", err)
@@ -162,13 +176,14 @@ func getMarkedCheckpointsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Function to fetch marked checkpoints from the database
-func getMarkedCheckpointsFromDB() ([]map[string]interface{}, error) {
+func getMarkedCheckpointsFromDB(date string) ([]map[string]interface{}, error) {
 	rows, err := db.Query(`
         SELECT mc.checkpoint_id, mc.car_id, mc.checkpoint_time, mc.checkpoint_date, c.checkpoint_name, ca.number_plate
         FROM marked_checkpoints mc
         JOIN checkpoints c ON mc.checkpoint_id = c.id
         JOIN cars ca ON mc.car_id = ca.id
-    `)
+		WHERE mc.checkpoint_date = ?
+    `, date)
 	if err != nil {
 		return nil, err
 	}
@@ -207,4 +222,75 @@ func getMarkedCheckpointsFromDB() ([]map[string]interface{}, error) {
 	}
 
 	return markedCheckpoints, nil
+}
+
+func filterTripsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	carID := r.URL.Query().Get("carID")
+	date := r.URL.Query().Get("date")
+
+	trips, err := getTrips(carID, date)
+	if err != nil {
+		http.Error(w, "Failed to fetch trips", http.StatusInternalServerError)
+		log.Println("Failed to fetch trips from the DB", err)
+		return
+	}
+
+	jsonData, err := json.Marshal(trips)
+	if err != nil {
+		http.Error(w, "Failed to encode trips data", http.StatusInternalServerError)
+		log.Println("Error encoding JSON data:", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
+}
+
+func getTrips(carID, date string) ([]map[string]interface{}, error) {
+	query := `
+        SELECT mc.checkpoint_date, ca.number_plate, COUNT(*) AS trip_count
+        FROM marked_checkpoints mc
+        JOIN cars ca ON mc.car_id = ca.id
+        WHERE 1=1`
+
+	var args []interface{}
+	if carID != "" {
+		query += " AND mc.car_id = ?"
+		args = append(args, carID)
+	}
+	if date != "" {
+		query += " AND mc.checkpoint_date = ?"
+		args = append(args, date)
+	}
+
+	query += " GROUP BY mc.checkpoint_date, ca.number_plate ORDER BY mc.checkpoint_date, ca.number_plate"
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var trips []map[string]interface{}
+	for rows.Next() {
+		var checkpointDate, numberPlate string
+		var tripCount int
+		if err := rows.Scan(&checkpointDate, &numberPlate, &tripCount); err != nil {
+			return nil, err
+		}
+
+		trip := map[string]interface{}{
+			"Date":        checkpointDate,
+			"NumberPlate": numberPlate,
+			"Count":       tripCount,
+		}
+		trips = append(trips, trip)
+	}
+
+	return trips, nil
 }
