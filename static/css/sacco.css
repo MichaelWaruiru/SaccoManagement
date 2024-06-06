@@ -1,3 +1,42 @@
+html, body {
+    min-height: 100vh;
+    margin: 0;
+    object-fit: cover;
+    position: relative;
+}
+
+/* Ensures content pushes footer to bottom */
+body {
+    display: flex;
+    flex-direction: column;
+    background-repeat: no-repeat;
+    background-image: url(/static/images/matatu.jpg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 500px;
+}
+
+table {
+    background-color: rgb(230, 223, 223);
+}
+
+h1, h2 {
+    background-color: rgba(230, 230, 157, 0.678);
+}
+
+.filter {
+    background-color: rgba(0, 0, 0, 0.973);
+    color: white;
+}
+
+.mark-checkpoint, .checkpoint-container {
+    /* flex: 1; */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-bottom: 100px; /* Add padding at the bottom to prevent content from hiding behind the footer */
+}
+
+
 .suggestion-list {
     cursor: pointer;
     padding: 5px;
@@ -8,6 +47,9 @@
     display: block;
     padding: 10px;
     transition: transform 0.5s ease;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
 }
 
 .sacco-link:hover {
