@@ -22,6 +22,14 @@ var (
 	store = sessions.NewCookieStore([]byte("fleet-mgnt!"))
 )
 
+func init() {
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   1800, // 30 minutes
+		HttpOnly: true,
+	}
+}
+
 func signupHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		email := r.FormValue("email")
@@ -117,6 +125,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		// Set a session to mark the user as authenticated
 		session, _ := store.Get(r, "sacco-mgmnt")
 		session.Values["user"] = username
+		session.Values["lastActivity"] = time.Now().Unix()
 		session.Save(r, w)
 
 		// Successful login
@@ -151,39 +160,39 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
 
-// func sessionMiddleware(next http.HandlerFunc) http.HandlerFunc {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		session, err := store.Get(r, "sacco-mgmnt")
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
+func sessionMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		session, err := store.Get(r, "sacco-mgmnt")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-// 		// Check if session is new or user isn't logged in
-// 		if session.IsNew || session.Values["user"] == nil {
-// 			http.Redirect(w, r, "/login", http.StatusSeeOther)
-// 			return
-// 		}
+		// Check if session is new or user isn't logged in
+		if session.IsNew || session.Values["user"] == nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
 
-// 		// Check if the user has expired
-// 		lastActivity, ok := session.Values["lastActivity"].(int64)
-// 		if !ok {
-// 			// If lastActivity is not set, treat session as expired
-// 			http.Redirect(w, r, "/logout", http.StatusSeeOther)
-// 			return
-// 		}
+		// Check if the user has expired
+		lastActivity, ok := session.Values["lastActivity"].(int64)
+		if !ok {
+			// If lastActivity is not set, treat session as expired
+			http.Redirect(w, r, "/logout", http.StatusSeeOther)
+			return
+		}
 
-// 		// Check if session has expired(15 minutes)
-// 		if time.Now().Unix()-lastActivity > 15*60 {
-// 			http.Redirect(w, r, "/logout", http.StatusSeeOther)
-// 			return
-// 		}
+		// Check if session has expired(15 minutes)
+		if time.Now().Unix()-lastActivity > 15*60 {
+			http.Redirect(w, r, "/logout", http.StatusSeeOther)
+			return
+		}
 
-// 		// Update last activity time
-// 		session.Values["lastActivity"] = time.Now().Unix()
-// 		session.Save(r, w)
+		// Update last activity time
+		session.Values["lastActivity"] = time.Now().Unix()
+		session.Save(r, w)
 
-// 		// Call the next handler
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
+		// Call the next handler
+		next.ServeHTTP(w, r)
+	})
+}
