@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="/static/css/footer.css">
 
     <!-- Search suggestions container -->
-    <div id="searchSuggestions" class="suggestion-list"></div>
+   <div id="searchSuggestions" class="suggestion-list"></div>
 
     <!-- Details container -->
     <div id="detailsContainer"></div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="routeSelect" class="form-label">Select Route:</label>
-                    <select class="form-select" id="routeSelect" name="routeSelect" required>
+                    <select  class="form-select" id="routeSelect" name="routeSelect" required>
                         <option value="" selected disabled>Select Route</option>
                         {{ range .Checkpoints }}
                         <option value="{{ .ID }}">{{ .CheckpointName }}</option>
@@ -54,7 +54,7 @@
                     <label for="datePicker" class="form-label">Select Date:</label>
                     <input type="date" id="datePicker" name="datePicker" class="form-control" required>
                 </div>
-                <button type="submit" id="markCheckpointBtn" class="btn btn-primary">Mark Checkpoint</button>
+                <button type="submit" class="btn btn-primary">Mark Checkpoint</button>
             </form>
         </div>
 
@@ -100,8 +100,9 @@
         <!-- Filter by Date in Trips Section -->
         <div class="mb-3">
             <label for="tripsFilterDatePicker" class="form-label filter">Filter by Date:</label>
-            <input type="date" id="tripsFilterDatePicker" name="filterDatePickers" class="form-control">
+            <input type="date" id="tripsFilterDatePicker" name="filterDatePicker" class="form-control">
         </div>
+    
         <button id="filterTripsBtn" class="btn btn-primary">Filter Trips</button>
     
         <!-- Trips Table -->
@@ -185,7 +186,7 @@
                         data.forEach(function(checkpoint) {
                             $("#markedCheckpointsTable").append(
                                 `<tr>
-                                    <td>${checkpoint.RouteName}</td>
+                                    <td>${checkpoint.CheckpointName}</td>
                                     <td>${checkpoint.CheckpointName}</td>
                                     <td>${checkpoint.NumberPlate}</td>
                                     <td>${checkpoint.Time}</td>
