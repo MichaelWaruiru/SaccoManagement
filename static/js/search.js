@@ -35,7 +35,7 @@ $(document).ready(function () {
         // Hide and clear suggestions
         hideSuggestions();
 
-        // Clear the details container before performing new search
+        // Clear the details container before performing a new search
         clearDetails();
 
         $.ajax({
@@ -56,8 +56,8 @@ $(document).ready(function () {
 
                 var tableBody = searchResultsContainer.find('tbody');
                 var tableHeaderRow = searchResultsContainer.find('thead tr');
-                tableBody.empty();
-                tableHeaderRow.empty();
+                tableBody.empty(); // Clear previous search results
+                tableHeaderRow.empty(); // Clear previous table headings
                 
                 // Append table headings
                 tableHeaderRow.append('<th>Result Type</th>');
@@ -233,6 +233,8 @@ $(document).ready(function () {
         if (details && Object.keys(details).length > 0) {
             var table = $('<table>').addClass('details-table');
             var tableBody = $('<tbody>');
+
+            clearDetails();
     
             // Row for headings
             var headingsRow = $('<tr>');
@@ -290,9 +292,11 @@ $(document).ready(function () {
         if (query.length > 0) {
             // Hide details table when search is performed
             hideHomeDetailsTable();
+            $("#searchSuggestions").css('background-color', '#f0f0f0'); // Show background color
         } else {
             // Show details table when search input is empty
             showHomeDetailsTable();
+            $("#searchSuggestions").css('background-color', 'transparent'); // Hide background color
         }
     });
 });

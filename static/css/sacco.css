@@ -77,6 +77,9 @@ h1, h2 {
 
 #searchSuggestions {
     margin-top: 2dvh;
+    width: 300px;
+    padding: 10px;
+    margin: 0 auto;
 }
 
 /* Style for displaying the searched details populated table results */
@@ -87,15 +90,15 @@ h1, h2 {
     margin-top: 5dvh;
 }
 
-.details-table {
+.details-table, .custom-table {
     width: 100%;
     max-width: 1000px;
     border-collapse: collapse;
 }
 
 .details-table th, .details-table td,
-.custom-table th, .custom-table td {
-    padding: 8px ;
+.custom-table th, .custom-table td  {
+    padding: 8px;
     border-bottom: 1px solid #ddd;
     /* text-align: left; */
 }
@@ -118,6 +121,49 @@ th, .custom-table th {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         max-height: calc(100vh - 50px); /* Limit height to viewport height */
         overflow-y: auto; /* Enable vertical scrolling if needed */
+    }
+
+    /* Style for displaying the search populated table results */
+    #searchResultsTableContent {
+        margin: 0 auto; /* This centers the table horizontally */
+        width: 90%;
+    }
+
+    #searchSuggestions,
+    #detailsContainer {
+        justify-content: center;
+        text-align: center;
+    }
+
+    #searchSuggestions {
+        margin-top: 2dvh;
+    }
+
+    /* Style for displaying the searched details populated table results */
+    #detailsContainer {
+        display: flex;
+        align-items: center;
+        width: auto;
+        margin-top: 5dvh;
+    }
+
+    .details-table, .custom-table {
+        width: 100%;
+        max-width: 1000px;
+        border-collapse: collapse;
+    }
+
+    .details-table th, .details-table td,
+    .custom-table th, .custom-table td  {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        /* text-align: left; */
+    }
+
+    .details-table th,
+    #searchResultsTableContent th, 
+    th, .custom-table th {
+        background-color: #28dd17;
     }
 }
 
