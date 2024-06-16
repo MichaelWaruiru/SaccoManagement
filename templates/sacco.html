@@ -382,6 +382,9 @@
                 // Hide and clear suggestions
                 hideSuggestions();
 
+                // Clear the details container before performing a new search
+                clearDetails();
+
                 $.ajax({
                     type: 'GET',
                     url: '/search',
