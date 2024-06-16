@@ -93,15 +93,16 @@ h1, h2 {
     border-collapse: collapse;
 }
 
-.details-table th, .details-table td {
-    padding: 8px 16px;
+.details-table th, .details-table td,
+.custom-table th, .custom-table td {
+    padding: 8px ;
     border-bottom: 1px solid #ddd;
     /* text-align: left; */
 }
 
 .details-table th,
 #searchResultsTableContent th, 
-th {
+th, .custom-table th {
     background-color: #28dd17;
 }
 
@@ -119,19 +120,6 @@ th {
         overflow-y: auto; /* Enable vertical scrolling if needed */
     }
 }
-
-/* CSS for edit and delete buttons */
-/* .edit-btn,
-.delete-btn {
-    display: inline-block;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.sacco-link:hover .edit-btn,
-.sacco-link:hover .delete-btn {
-    opacity: 1;
-} */
 
 /* CSS for search form to enable cursor focus */
 #searchform { display: none; }

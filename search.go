@@ -176,57 +176,6 @@ func searchCarInDB(query string) ([]Car, error) {
 	return results, nil
 }
 
-// func searchDriverInDB(query string) ([]Driver, error) {
-// 	var results []Driver
-
-// 	// Query database to search for drivers along with related car and sacco information
-// 	rows, err := db.Query(`
-//         SELECT drivers.id, drivers.name, drivers.id_number, drivers.contact,
-//                COALESCE(cars.number_plate, '') AS number_plate,
-//                COALESCE(saccos.sacco_name, '') AS sacco_name,
-//                drivers.car_id, drivers.sacco_id
-//         FROM drivers
-//         LEFT JOIN cars ON drivers.car_id = cars.id
-//         LEFT JOIN saccos ON drivers.sacco_id = saccos.id
-//         WHERE drivers.name LIKE ? OR drivers.id_number LIKE ? OR drivers.contact LIKE ?
-//     `, "%"+query+"%", "%"+query+"%", "%"+query+"%")
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var driver Driver
-// 		var carID, saccoID int // Temporary variables to hold the scanned values
-// 		// Scan the results into temporary variables
-// 		err := rows.Scan(&driver.ID, &driver.Name, &driver.IDNumber, &driver.Contact,
-// 			&driver.NumberPlate, &driver.SaccoName, &carID, &saccoID)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		// Set default values if CarID or SaccoID is 0
-// 		if carID == 0 {
-// 			carID = -1 // Or any other default value you prefer
-// 		}
-// 		if saccoID == 0 {
-// 			saccoID = -1 // Or any other default value you prefer
-// 		}
-
-// 		// Assign values to the Driver struct
-// 		driver.CarID = carID
-// 		driver.SaccoID = saccoID
-
-// 		// Append the driver to the results slice
-// 		results = append(results, driver)
-// 	}
-
-// 	// Log the results
-// 	// log.Println("Driver search results:", results)
-
-//		return results, nil
-//	}
-//
 // Search for drivers in the database and retrieve relevant information
 func searchDriverInDB(query string) ([]Driver, error) {
 	var results []Driver
@@ -471,7 +420,7 @@ func getDetailsFromSuggestion(suggestion string) (interface{}, error) {
 		return nil, err
 	}
 	if details != nil {
-		fmt.Println("Details found:", details)
+		// fmt.Println("Details found:", details)
 		return details, nil
 	}
 
@@ -483,7 +432,7 @@ func getDetailsFromSuggestion(suggestion string) (interface{}, error) {
 			return nil, err
 		}
 		if details != nil {
-			fmt.Println("Details found:", details)
+			// fmt.Println("Details found:", details)
 			return details, nil
 		}
 	}
@@ -538,7 +487,7 @@ func getDetailsFromTable(table, suggestion string) (interface{}, error) {
 
 // Fetch details from the saccos table
 func getSaccoDetails(suggestion string) (*Sacco, error) {
-	log.Printf("Executing query to get sacco details for suggestion '%s'\n", suggestion)
+	// log.Printf("Executing query to get sacco details for suggestion '%s'\n", suggestion)
 
 	var sacco Sacco
 
@@ -559,7 +508,7 @@ func getSaccoDetails(suggestion string) (*Sacco, error) {
 
 // Fetch details from the cars table
 func getCarDetails(suggestion string) ([]Car, error) {
-	log.Printf("Executing query to get car details for suggestion '%s'\n", suggestion)
+	// log.Printf("Executing query to get car details for suggestion '%s'\n", suggestion)
 
 	var cars []Car
 	query := `
@@ -584,7 +533,7 @@ func getCarDetails(suggestion string) ([]Car, error) {
 		}
 		cars = append(cars, car)
 	}
-	fmt.Println("Cars: ", cars)
+	// fmt.Println("Cars: ", cars)
 
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -595,7 +544,7 @@ func getCarDetails(suggestion string) ([]Car, error) {
 
 // Fetch details from the drivers table
 func getDriverDetails(suggestion string) ([]Driver, error) {
-	log.Printf("Executing query to get driver details for suggestion '%s'\n", suggestion)
+	// log.Printf("Executing query to get driver details for suggestion '%s'\n", suggestion)
 
 	var drivers []Driver
 	query := `
@@ -624,7 +573,7 @@ func getDriverDetails(suggestion string) ([]Driver, error) {
 		}
 		drivers = append(drivers, driver)
 	}
-	fmt.Println("Drivers: ", drivers)
+	// fmt.Println("Drivers: ", drivers)
 
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -635,7 +584,7 @@ func getDriverDetails(suggestion string) ([]Driver, error) {
 
 // Fetch managers details from the saccos table
 func getSaccoDetailsByManager(manager string) (*Sacco, error) {
-	log.Printf("Executing query to get sacco details for manager '%s'\n", manager)
+	// log.Printf("Executing query to get sacco details for manager '%s'\n", manager)
 
 	var sacco Sacco
 

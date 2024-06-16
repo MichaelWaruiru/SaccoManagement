@@ -35,6 +35,9 @@ $(document).ready(function () {
         // Hide and clear suggestions
         hideSuggestions();
 
+        // Clear the details container before performing new search
+        clearDetails();
+
         $.ajax({
             type: 'GET',
             url: '/search',
@@ -47,7 +50,7 @@ $(document).ready(function () {
                 var searchResultsContainer = $('#searchResultsTableContent');
 
                 if (searchResultsContainer.length === 0) {
-                    searchResultsContainer = $('<table id="searchResultsTableContent" class="table"><thead><tr></tr></thead><tbody></tbody></table>');
+                    searchResultsContainer = $('<table id="searchResultsTableContent" class="table custom-table"><thead><tr></tr></thead><tbody></tbody></table>');
                     $('body').append(searchResultsContainer);
                 }
 
