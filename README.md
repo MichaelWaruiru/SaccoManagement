@@ -26,7 +26,7 @@ This is a Kenyan fleet/saccos management system
     go build
     ```
 
-### Contributing (Optional)
+### Contributing
 If you want others to contribute, provide guidelines for doing so.
 
 ```markdown
