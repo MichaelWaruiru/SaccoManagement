@@ -26,6 +26,11 @@ This is a Kenyan fleet/saccos management system
     go build
     ```
 
+## Usage
+To start the web server:
+    http://localhost:8080
+    
+
 ### Contributing
 If you want others to contribute, provide guidelines for doing so.
 
