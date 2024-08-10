@@ -14,7 +14,7 @@ This is a Kenyan fleet/saccos management system
     ```
 2. Navigate to the project directory:
     ```bash
-    cd SaccoManagement
+    cd ProjectDirectory
     ```
 3. Install dependencies:
     ```bash
