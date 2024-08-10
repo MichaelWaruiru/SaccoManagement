@@ -35,7 +35,6 @@ To start the web server:
 If you want to contribute, these are the guidelines for doing so:
 
 ```markdown
-## Contributing
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature-branch`).
 3. Make your changes.
@@ -43,7 +42,7 @@ If you want to contribute, these are the guidelines for doing so:
 5. Push to the branch (`git push origin feature-branch`).
 6. Open a pull request.
 
-
+```
 ### License
 MIT License
 
