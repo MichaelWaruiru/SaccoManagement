@@ -28,11 +28,12 @@ This is a Kenyan fleet/saccos management system
 
 ## Usage
 To start the web server:
+ ```bash
     http://localhost:8080
     
 
 ### Contributing
-If you want others to contribute, provide guidelines for doing so.
+If you want to contribute, these are the guidelines for doing so:
 
 ```markdown
 ## Contributing
