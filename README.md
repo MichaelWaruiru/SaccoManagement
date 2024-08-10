@@ -36,10 +36,13 @@ If you want to contribute, these are the guidelines for doing so:
 
 ```markdown
 1. Fork the repository.
+2. **Create a new branch** from `main`:
+   ```bash
+   git checkout -b feature-branch main
 2. Create a new branch (`git checkout -b master`).
 3. Make your changes.
-4. Commit your changes (`git commit -m 'Add some feature'`).
-5. Push to the branch (`git push origin master`).
+4. Commit your changes (`git commit -m 'Add some features/fix'`).
+5. Push to the branch (`git push origin feature-branch main).
 6. Open a pull request.
 
 ```
