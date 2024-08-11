@@ -2,11 +2,16 @@ This is a Kenyan fleet/saccos management system
 
 
 ## Table of Contents
+- [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 - [Known Issues](#known-issues)
+
+## Prerequisites
+- Go 1.21 or later
+- MySQL 13.x
 
 - ## Installation
 1. Clone the repository:
