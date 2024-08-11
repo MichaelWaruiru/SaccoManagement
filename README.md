@@ -11,9 +11,9 @@ This is a Kenyan fleet/saccos management system
 
 ## Prerequisites
 - Go 1.21 or later
-- MySQL 13.x
+- MySQL 8.0
 
-- ## Installation
+## Installation
 1. Clone the repository:
     ```bash
     git clone https://github.com/MichaelWaruiru/SaccoManagement.git
