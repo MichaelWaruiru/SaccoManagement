@@ -6,6 +6,7 @@ This is a Kenyan fleet/saccos management system
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
+- [Known Issues](#knownissues)
 
 - ## Installation
 1. Clone the repository:
@@ -65,3 +66,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Known Issues
+- The API has issues in route and trips. A fix is in progress.
+- Deleting sacco will cause errors in both the server and the user side.
