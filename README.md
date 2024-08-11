@@ -6,7 +6,7 @@ This is a Kenyan fleet/saccos management system
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
-- [Known Issues](#knownissues)
+- [Known Issues](#known-issues)
 
 - ## Installation
 1. Clone the repository:
