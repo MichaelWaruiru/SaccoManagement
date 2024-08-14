@@ -73,5 +73,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ## Known Issues
-- The API has issues in route and trips. A fix is in progress.
-- Deleting sacco will cause errors in both the server and the user side.
+- The API has issues in route names and trips due to overlapping of checkpoints. A fix is in progress.
