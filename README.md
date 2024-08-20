@@ -18,7 +18,7 @@ This is a Kenyan fleet/saccos management system
     ```bash
     git clone https://github.com/MichaelWaruiru/SaccoManagement.git
     ```
-2. Navigate to the project directory:
+2. Navigate to your project directory:
     ```bash
     cd ProjectDirectory
     ```
@@ -74,4 +74,4 @@ SOFTWARE.
 
 ## Known Issues
 - The API has issues in route names and trips due to overlapping of checkpoints. A fix is in progress.
-- Deleting sacco directly will cause server errors on the server and user side.
+- Deleting sacco directly will cause server errors on the server and user side. Fixed
