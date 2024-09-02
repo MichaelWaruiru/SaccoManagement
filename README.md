@@ -1,4 +1,4 @@
-This is a Kenyan fleet/saccos management system for PSVs under different saccos
+This is a Kenyan fleet/saccos management system for PSVs under different saccos.
 
 
 ## Table of Contents
