@@ -1,4 +1,5 @@
 This is a Kenyan fleet/saccos management system for PSVs under different saccos.
+It's for managing vehicles, drivers and saccos' managers.
 
 
 ## Table of Contents
