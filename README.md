@@ -75,4 +75,3 @@ SOFTWARE.
 
 ## Known Issues
 - The API has issues in route names and trips due to overlapping of checkpoints. A fix is in progress.
-- Deleting sacco directly will cause server errors on the server and user side. Fixed
